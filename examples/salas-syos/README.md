@@ -41,22 +41,21 @@ retorna `ErrorItemNotFound`.
 
 ## Salas
 
-| Sala | Lugares | Caixa de recurso | Origem |
-|---|---|---|---|
-| Beacon | 4 | `salabeacon@syos.com` | deduzida, **não confirmada** |
-| Cadeia do Frio | 6 | `SalaCadeiadoFrio…@syos.com` | convite real |
-| FicaFrio | 4 | — | desconhecida |
-| Super Easy | 6 | `SalaPaulo…@syos.com` | convite real |
-| Syos Easy | 8 | `SalaBugs…@syos.com` | convite real |
+| Sala | Lugares | Caixa de recurso |
+|---|---|---|
+| Beacon | 4 | desconhecida |
+| Cadeia do Frio | 6 | `SalaCadeiadoFrio…@syos.com` |
+| FicaFrio | 4 | desconhecida |
+| Super Easy | 6 | `SalaPaulo…@syos.com` |
+| Syos Easy | 8 | `SalaBugs…@syos.com` |
+
+Cada endereço cadastrado veio de um convite real observado na agenda do usuário. Nenhum
+foi deduzido: um palpite que resolve no Exchange e devolve livre/ocupado ainda assim não
+prova ser a sala certa, e mostrar isso como agenda da sala seria inventar dado.
 
 Os apelidos vêm de nomes antigos das salas, então não correspondem ao nome atual nem podem
-ser adivinhados. Sem o endereço não há consulta a fazer: a sala aparece como desconhecida,
-nunca como livre. A página diz isso explicitamente em vez de silenciar.
-
-O endereço do Beacon foi deduzido pelo nome, não veio de um convite. Ele é uma caixa real e
-distinta das outras três (as quatro agendas divergem entre si no mesmo dia), mas o nome de
-exibição nunca foi observado, então a página o marca como **endereço a confirmar** até que
-alguém valide.
+ser adivinhados. Sem o endereço não há consulta a fazer: a sala aparece como **Desconhecida**,
+nunca como livre, e a página explica o porquê acima da linha do tempo.
 
 A página aprende sozinha: ao abrir, varre as reuniões do próprio usuário, identifica a sala
 pelo campo de local do evento e grava o endereço em `discovered/rooms`, que qualquer pessoa

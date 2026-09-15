@@ -526,8 +526,7 @@ function applyRooms(){
   var next = cfg.map(function(c){
     var disc = state.disc[c.id];
     var email = c.email || (EMAIL_RE.test(String(disc||'')) ? disc : '');
-    return {id: c.id, name: c.name, capacity: c.capacity, email: email,
-      source: c.email ? 'cfg' : (email ? 'disc' : ''), verified: c.email ? (c.verified !== false) : true};
+    return {id: c.id, name: c.name, capacity: c.capacity, email: email, source: c.email ? 'cfg' : (email ? 'disc' : '')};
   });
   var changed = JSON.stringify(next) !== JSON.stringify(state.rooms);
   state.rooms = next;
@@ -538,8 +537,7 @@ function normalizeCfg(data){
   var byId = {}; if (data && Array.isArray(data.rooms)) data.rooms.forEach(function(r){ if (r && typeof r === 'object' && typeof r.id === 'string') byId[r.id] = r; });
   return ROOMS_DEFAULT.map(function(d){ var r = byId[d.id] || {}; var cap = parseInt(r.capacity, 10); var mail = cleanEmail(r.email);
     return {id: d.id, name: typeof r.name === 'string' && r.name.length && r.name.length < 60 ? r.name : d.name,
-      capacity: (cap >= 1 && cap <= CAP_MAX) ? cap : d.capacity, email: (mail.length <= 254 && EMAIL_RE.test(mail)) ? mail : '',
-      verified: r.verified !== false}; });
+      capacity: (cap >= 1 && cap <= CAP_MAX) ? cap : d.capacity, email: (mail.length <= 254 && EMAIL_RE.test(mail)) ? mail : ''}; });
 }
 function normalizeDisc(data){
   var out = {}, src = data && data.rooms;
@@ -627,7 +625,7 @@ function renderNow(){
       detail = (st.openEnd ? 'até o fim do dia' : 'até ' + slotLabel(st.untilK)) + (st.label ? ' · ' + st.label.subject + (st.label.who ? ' (' + st.label.who + ')' : '') : ''); }
     else if (st.kind === 'before') detail = 'antes das 7h';
     else if (st.kind === 'after') detail = 'depois das 19h30';
-    else if (st.kind === 'noemail') detail = 'sem agenda conectada: falta o endereço desta sala no Microsoft 365';
+    else if (st.kind === 'noemail') { word = 'Desconhecida'; detail = 'o Microsoft 365 não foi consultado: falta o endereço desta sala'; }
     else if (st.kind === 'loading') { word = '…'; detail = 'consultando'; }
     else if (st.kind === 'unknown') detail = 'agenda inacessível';
     else if (st.kind === 'nomcp') detail = 'sem conector Microsoft 365';
@@ -635,8 +633,7 @@ function renderNow(){
     var d = document.createElement('div'); d.className = 'nowcard ' + cls;
     d.innerHTML = '<div class="r">' + esc(r.name) + '</div><div class="st">' + esc(word) + '</div>'
       + '<div class="d">' + esc(detail) + '</div>'
-      + '<div class="d">' + (r.capacity ? esc(r.capacity + ' lugares') : '')
-      + (r.email && r.verified === false ? ' · <b style="font-weight:600;color:var(--warn)">endereço a confirmar</b>' : '') + '</div>';
+      + '<div class="d">' + (r.capacity ? esc(r.capacity + ' lugares') : '') + '</div>';
     host.appendChild(d);
   });
 }
@@ -654,12 +651,15 @@ function renderPanel(){
   var ds = state.panelDay || todayStr(), today = todayStr();
   $('#panel-when').textContent = fmtDate(fromDateStr(ds)) + (ds === today ? ' · hoje' : '');
   var st = dayStats(ds), base = baseK(ds), nk = nowK(), isToday = ds === today;
-  var freeNow = isToday ? state.rooms.filter(function(r){ return nowStatus(r.id).kind === 'free'; }).length : null;
+  var nowKinds = isToday ? state.rooms.map(function(r){ return nowStatus(r.id).kind; }) : [];
+  var nowKnown = nowKinds.filter(function(k){ return k === 'free' || k === 'busy' || k === 'tent'; }).length;
+  var freeNow = isToday ? nowKinds.filter(function(k){ return k === 'free'; }).length : null;
   var withData = st.perRoom.filter(function(p){ return p.status === 'ok'; }).length;
   var kp = [
     {v: st.pct === null ? '—' : st.pct + '%', l: 'Ocupação do dia', s: withData + ' de ' + state.rooms.length + ' salas com agenda lida'},
     {v: fmtHours(st.busy * SLOT), l: 'Horas reservadas', s: 'na janela 7h–19h30'},
-    {v: isToday ? (freeNow === null ? '—' : freeNow + '/' + state.rooms.length) : '—', l: 'Livres agora', s: isToday ? 'neste instante' : 'só para hoje'},
+    {v: isToday ? (nowKnown ? freeNow + '/' + nowKnown : '—') : '—', l: 'Livres agora',
+     s: !isToday ? 'só para hoje' : !nowKnown ? 'nenhuma sala com agenda' : nowKnown < state.rooms.length ? 'das ' + nowKnown + ' salas com agenda' : 'neste instante'},
     {v: st.peakK === null ? '—' : slotLabel(st.peakK), l: 'Horário de pico', s: st.peakK === null ? 'sem reservas' : st.peakN + ' sala' + (st.peakN>1?'s':'') + ' ocupada' + (st.peakN>1?'s':'')}
   ];
   $('#kpis').innerHTML = kp.map(function(x){ return '<div class="kpi"><div class="v">'+esc(x.v)+'</div><div class="l">'+esc(x.l)+'</div><div class="s">'+esc(x.s)+'</div></div>'; }).join('');
@@ -667,7 +667,7 @@ function renderPanel(){
   var av = $('#missing-note');
   if (semend.length && state.mcp) {
     av.hidden = false;
-    av.innerHTML = '<b style="font-weight:600">' + esc(semend.map(function(r){ return r.name; }).join(', ')) + '</b>: sem agenda porque o Microsoft 365 exige o endereço da caixa de recurso e ele ainda não é conhecido. Não é livre nem ocupada — é desconhecido. Convide a sala para qualquer reunião no Outlook e clique em “Descobrir agora”, no rodapé.';
+    av.innerHTML = '<b style="font-weight:600">' + esc(semend.map(function(r){ return r.name; }).join(', ')) + '</b>: nada é consultado porque o Microsoft 365 exige o endereço da caixa de recurso da sala, e ele ainda não é conhecido. Não é livre nem ocupada: é desconhecido, e a página prefere dizer isso a chutar. Convide a sala para qualquer reunião no Outlook e clique em “Descobrir agora”, no rodapé — o endereço passa a valer para todo mundo.';
   } else av.hidden = true;
 
   var host = $('#daygrid'); host.innerHTML = '';
@@ -675,7 +675,7 @@ function renderPanel(){
     var a = roomDay(ds, r.id);
     var sub = a.status === 'ok' ? (r.capacity ? r.capacity + ' lugares' : 'capacidade na porta')
       : a.status === 'noemail' ? 'falta o endereço' : a.status === 'loading' ? 'consultando…' : a.status === 'unknown' ? 'sem acesso' : a.status === 'error' ? 'erro' : a.status === 'nomcp' ? 'sem conector' : '—';
-    if (a.status === 'ok' && r.verified === false) sub += ' · a confirmar';
+
     var row = document.createElement('div'); row.className = 'grow';
     var cells = document.createElement('div'); cells.className = 'gcells';
     for (var i=0;i<SLOTS;i++){
@@ -835,9 +835,8 @@ function saveCfg(){
     var capRaw = String(($('#cap-'+r.id) || {}).value || '').trim(), cap = parseInt(capRaw, 10), mail = cleanEmail(($('#mail-'+r.id) || {}).value || '');
     if (capRaw && !(cap >= 1 && cap <= CAP_MAX)) badCap.push(r.name);
     if (mail && !(mail.length <= 254 && EMAIL_RE.test(mail))) badMail.push(r.name);
-    var same = mail === String(r.email || '').toLowerCase();
     return {id: r.id, name: r.name, capacity: (cap >= 1 && cap <= CAP_MAX) ? cap : null,
-      email: (mail.length <= 254 && EMAIL_RE.test(mail)) ? mail : '', verified: same ? (r.verified !== false) : true};
+      email: (mail.length <= 254 && EMAIL_RE.test(mail)) ? mail : ''};
   });
   if (badMail.length) { s.textContent = 'Endereço inválido em: ' + badMail.join(', ') + '.'; return; }
   if (badCap.length) { s.textContent = 'Lugares inválidos (1 a ' + CAP_MAX + ') em: ' + badCap.join(', ') + '.'; return; }
