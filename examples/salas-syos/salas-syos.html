@@ -137,12 +137,20 @@ section{background:var(--surface);border:1px solid var(--line);border-radius:var
 .wc.head{background:transparent;border-color:transparent;color:var(--faint);font-size:11.5px;padding-bottom:1px}
 .wc.na{color:var(--faint);font-weight:400}
 .prog{font-size:12.5px;color:var(--faint)}
+.sync{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--faint);white-space:nowrap;line-height:1.3}
+.sync i{width:6px;height:6px;border-radius:50%;background:var(--free);flex:0 0 auto}
+.sync.old i{background:var(--warn)}
+.sync.off i{background:var(--line-strong)}
+.sync.live i{background:var(--accent);animation:sp 1.5s ease-in-out infinite}
+@keyframes sp{0%,100%{opacity:1}50%{opacity:.25}}
+@media (prefers-reduced-motion: reduce){.sync.live i{animation:none}}
 .note{font-size:12.5px;color:var(--ink);background:var(--warn-soft);border-radius:var(--radius-s);padding:9px 11px;margin:0}
 .callout{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--warn);border-radius:var(--radius-s);padding:14px 16px;display:grid;gap:7px;box-shadow:var(--shadow)}
 .callout h3{margin:0;font-family:var(--display);font-size:15px;font-weight:600}
 .callout p{font-size:13px;color:var(--muted)}
 .callout ol{margin:0;padding-left:18px;font-size:13px;color:var(--muted);display:grid;gap:3px}
 .callout .cached{color:var(--ink);font-weight:600;font-size:13px}
+.callout[hidden],.note[hidden]{display:none}
 footer{font-size:12px;color:var(--faint);text-align:center;padding-top:4px}
 </style>
 
@@ -175,6 +183,7 @@ footer{font-size:12px;color:var(--faint);text-align:center;padding-top:4px}
       <button class="btn" type="button" id="today">Hoje</button>
       <button class="btn" type="button" id="next">▶</button>
       <span class="sp"></span>
+      <span class="sync" id="day-sync"></span>
       <button class="btn" type="button" id="reload">Atualizar</button>
     </div>
     <div class="kpis" id="kpis"></div>
@@ -198,11 +207,11 @@ footer{font-size:12px;color:var(--faint);text-align:center;padding-top:4px}
 
   <section aria-labelledby="h-semana">
     <div class="head"><h2 id="h-semana">Semana</h2><span class="sub" id="week-range"></span></div>
-    <div class="nav"><button class="btn" type="button" id="week-load">Carregar semana</button><span class="prog" id="week-prog"></span></div>
+    <div class="nav"><span class="sync" id="week-sync"></span><span class="sp"></span><span class="prog" id="week-prog"></span><button class="btn" type="button" id="week-load">Atualizar semana</button></div>
     <div class="week" id="week"></div>
   </section>
 
-  <footer>Dados da agenda de cada sala no Microsoft 365, lidos com a sua conta.</footer>
+  <footer>Dados da agenda de cada sala no Microsoft 365, lidos com a sua conta. A página se atualiza sozinha enquanto estiver aberta: o dia a cada 2 min, a semana a cada 20 min.</footer>
 </div>
 
 <script>
@@ -212,7 +221,7 @@ var $ = function(s, r){ return (r||document).querySelector(s); };
 var SERVER = 'Microsoft 365';
 var DAY_START = 7*60, DAY_END = 20*60+30, SLOT = 15, SLOTS = 54, CHUNK = 27;
 var WSLOT = 30, WSLOTS = 27;
-var CAP_MAX = 200, REFETCH_MS = 120000;
+var CAP_MAX = 200, REFETCH_MS = 120000, WEEK_MS = 1200000, TICK_MS = 30000, CACHE_MS = 45000, EVENTS_MS = 600000;
 var ROOMS_DEFAULT = [
   {id:'beacon', name:'Beacon', capacity:4, email:''},
   {id:'cadeia-do-frio', name:'Cadeia do Frio', capacity:6, email:''},
@@ -229,9 +238,9 @@ var EMAIL_RE = /^[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$/;
 var state = {
   rooms: ROOMS_DEFAULT.map(function(r){ return Object.assign({}, r); }),
   days: {}, wk: {}, events: {}, day: null, filter: 'all',
-  week: {days: [], loading: false, done: 0, total: 0},
+  week: {loading: false, done: 0, total: 0, at: 0, from: '', key: '', sent: '', sentAt: 0, read: 0},
   mcp: undefined, db: undefined, cfg: null, disc: {}, discoverTried: false, warn: '', lastAt: 0,
-  connector: 'checking', cache: {}, cacheSent: {}, cachedAt: {}
+  connector: 'checking', cache: {}, cacheSent: {}, cachedAt: {}, cacheRead: {}
 };
 
 function lsGet(k, d){ try { var v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch(e){ return d; } }
@@ -248,7 +257,7 @@ function fromDateStr(ds){ var p = String(ds).split('-').map(Number); return new 
 function addDays(ds, n){ var d = fromDateStr(ds); d.setDate(d.getDate()+n); return dateStr(d); }
 function fmtDate(d){ try { return d.toLocaleDateString('pt-BR', {weekday:'long', day:'2-digit', month:'long'}); } catch(e){ return dateStr(d); } }
 function fmtShort(d){ try { return d.toLocaleDateString('pt-BR', {weekday:'short', day:'2-digit', month:'2-digit'}).replace(/\.$/,''); } catch(e){ return dateStr(d); } }
-function fmtDur(mins){ if (mins < 60) return mins + ' min'; var h = Math.floor(mins/60), m = mins%60; return h + ' h' + (m ? ' ' + pad(m) : ''); }
+function fmtDur(mins){ if (mins < 60) return mins + ' min'; var h = Math.floor(mins/60), m = mins%60; return h + 'h' + (m ? pad(m) : ''); }
 function fmtShortDur(mins){ if (!mins) return '0h'; if (mins < 60) return mins + 'min'; var h = Math.floor(mins/60), m = mins%60; return h + 'h' + (m ? pad(m) : ''); }
 function winOf(ds){
   var p = String(ds).split('-').map(Number);
@@ -325,7 +334,7 @@ function rd(ds, id){
   if (c) return {status:'ok', slots: c.slots, at: c.at, storedAt: c.at, fromCache: true};
   return live || {status:'none'};
 }
-function stale(a){ return !a || !a.at || (Date.now() - a.at) > REFETCH_MS; }
+function stale(a, ms){ return !a || !a.at || (Date.now() - a.at) > (ms || REFETCH_MS); }
 function ensureDay(ds, force, fresh, each){
   if (state.mcp) ensureEvents(ds, force).then(function(){ if (each) each(); });
   if (!state.mcp) { state.rooms.forEach(function(r){ dayOf(ds)[r.id] = {status: state.mcp === null ? 'nomcp' : 'wait'}; }); return Promise.resolve(); }
@@ -412,7 +421,7 @@ function evRooms(ev){
 function ensureEvents(ds, force){
   var cur = state.events[ds];
   if (!state.mcp) { state.events[ds] = {status:'nomcp', list:[]}; return Promise.resolve(); }
-  if (!force && cur && cur.status === 'ok' && !stale(cur)) return Promise.resolve();
+  if (!force && cur && cur.status === 'ok' && !stale(cur, EVENTS_MS)) return Promise.resolve();
   if (cur && cur.status === 'loading') return Promise.resolve();
   state.events[ds] = {status:'loading', list:(cur&&cur.list)||[]};
   var w = winOf(ds);
@@ -449,7 +458,9 @@ function applyRooms(){
     return {id:c.id, name:c.name, capacity:c.capacity, email: c.email || (EMAIL_RE.test(String(d||'')) ? d : '')};
   });
   if (JSON.stringify(next) !== JSON.stringify(state.rooms)) {
-    state.rooms = next; state.days = {}; state.events = {}; state.wk = {}; state.week.days = []; refresh(true);
+    state.rooms = next; state.days = {}; state.events = {}; state.wk = {};
+    state.week.key = ''; state.week.at = 0; state.week.from = ''; state.week.sent = '';
+    refresh(true); loadWeekCache(weekKey(), true); if (state.mcp) loadWeek(false);
   }
 }
 function normCfg(data){
@@ -511,12 +522,14 @@ function saveCache(ds){
   });
   if (!any) return;
   var body = JSON.stringify(rooms);
-  if (state.cacheSent[ds] === body && Date.now() - (state.cachedAt[ds] || 0) < 120000) return;
+  if (state.cacheSent[ds] === body && Date.now() - (state.cachedAt[ds] || 0) < 300000) return;
   state.cacheSent[ds] = body; state.cachedAt[ds] = Date.now();
   state.db.doc(cacheDoc(ds)).set({rooms: rooms, at: new Date().toISOString(), slots: SLOTS, start: DAY_START}).catch(function(){});
 }
-function loadCache(ds){
+function loadCache(ds, force){
   if (!state.db) return Promise.resolve();
+  if (!force && Date.now() - (state.cacheRead[ds] || 0) < CACHE_MS) return Promise.resolve();
+  state.cacheRead[ds] = Date.now();
   return state.db.doc(cacheDoc(ds)).get().then(function(snap){
     if (!snap || !snap.exists) return;
     var d = snap.data() || {}, rooms = d.rooms || {}, at = Date.parse(d.at) || 0;
@@ -538,6 +551,74 @@ function loadCache(ds){
     state.cachedAt[ds] = at;
     if (used) { state.lastAt = Math.max(state.lastAt, at); renderAll(); }
   }).catch(function(){});
+}
+function weekDoc(key){ return 'cache/week-' + key; }
+function saveWeek(key){
+  if (!state.db) return;
+  var out = {}, any = false;
+  weekDays(key).forEach(function(ds){
+    var per = state.wk[ds] || {}, row = {};
+    state.rooms.forEach(function(r){
+      var w = per[r.id];
+      if (w && w.status === 'ok' && w.from !== 'cache') { row[r.id] = {b: w.busy, p: w.pct}; any = true; }
+    });
+    if (Object.keys(row).length) out[ds] = row;
+  });
+  if (!any) return;
+  var body = JSON.stringify(out);
+  if (state.week.sent === body && Date.now() - state.week.sentAt < 300000) return;
+  state.week.sent = body; state.week.sentAt = Date.now();
+  state.db.doc(weekDoc(key)).set({days: out, at: new Date().toISOString(), slots: WSLOTS, start: DAY_START}).catch(function(){});
+}
+function loadWeekCache(key, force){
+  if (!state.db) return Promise.resolve();
+  if (!force && Date.now() - state.week.read < CACHE_MS) return Promise.resolve();
+  state.week.read = Date.now();
+  return state.db.doc(weekDoc(key)).get().then(function(snap){
+    if (!snap || !snap.exists) return;
+    var d = snap.data() || {}, days = d.days || {}, at = Date.parse(d.at) || 0, used = false;
+    if (d.slots && d.slots !== WSLOTS) return;
+    if (d.start !== undefined && d.start !== DAY_START) return;
+    Object.keys(days).forEach(function(ds){
+      var row = days[ds] || {};
+      if (!state.wk[ds]) state.wk[ds] = {};
+      state.rooms.forEach(function(r){
+        var v = row[r.id], cur = state.wk[ds][r.id];
+        if (!v || typeof v !== 'object') return;
+        if (cur && cur.status === 'ok' && cur.from !== 'cache') return;
+        var b = parseInt(v.b, 10), pc = parseInt(v.p, 10);
+        if (!(b >= 0 && b <= WSLOTS) || !(pc >= 0 && pc <= 100)) return;
+        state.wk[ds][r.id] = {status:'ok', busy: b, pct: pc, from:'cache'};
+        used = true;
+      });
+    });
+    if (used) {
+      if (!state.week.at || state.week.from === 'cache') { state.week.at = at; state.week.from = 'cache'; }
+      if (!state.week.key) state.week.key = key;
+      renderWeek();
+    }
+  }).catch(function(){});
+}
+function daySync(ds){
+  var at = 0, ok = 0, cached = 0, loading = false;
+  state.rooms.forEach(function(r){
+    var live = dayOf(ds)[r.id];
+    if (live && (live.status === 'loading' || live.refreshing)) loading = true;
+    var a = rd(ds, r.id);
+    if (a.status === 'ok') { ok++; if (a.fromCache) cached++; if (a.at) at = Math.max(at, a.at); }
+  });
+  return {at: at, ok: ok, cached: ok > 0 && cached === ok, loading: loading};
+}
+function setSync(sel, info){
+  var el = $(sel); if (!el) return;
+  if (info.loading && !info.at) { el.className = 'sync live'; el.innerHTML = '<i></i><span>sincronizando…</span>'; el.title = ''; return; }
+  if (!info.at) { el.className = 'sync off'; el.innerHTML = '<i></i><span>ainda sem sincronizar</span>'; el.title = ''; return; }
+  var age = Date.now() - info.at, lim = info.limit || REFETCH_MS * 3;
+  el.className = 'sync' + (info.loading ? ' live' : age > lim ? ' old' : '');
+  el.innerHTML = '<i></i><span>' + esc((info.cached ? 'dados de ' : 'sincronizado às ') + timeStr(new Date(info.at))) + '</span>';
+  el.title = info.cached
+    ? 'Último retrato salvo por alguém com o conector do Microsoft 365, em ' + timeStr(new Date(info.at)) + '.'
+    : 'Lido do Microsoft 365 com a sua conta em ' + timeStr(new Date(info.at)) + '.';
 }
 function usingCache(){
   var ds = state.day || todayStr();
@@ -572,14 +653,14 @@ function rank(st){
 /* render */
 function setStatus(){
   var el = $('#status'), t = $('#status-text'), ds = state.day || todayStr();
-  var known = state.rooms.filter(function(r){ return rd(ds, r.id).status === 'ok'; }).length;
-  var cached = usingCache();
+  var d = daySync(ds), known = d.ok, cached = usingCache();
   if (state.warn && !known) { el.className = 'status warn'; t.textContent = state.warn; }
   else {
     el.className = 'status';
-    t.textContent = !state.lastAt ? 'Carregando agendas…'
-      : known + ' de ' + state.rooms.length + ' salas · ' + (cached ? 'dados de ' : 'atualizado às ') + timeStr(new Date(state.lastAt)) + (cached ? ', carregados por outra pessoa' : '');
+    t.textContent = !d.at ? 'Carregando agendas…'
+      : known + ' de ' + state.rooms.length + ' salas · ' + (cached ? 'dados de ' : 'atualizado às ') + timeStr(new Date(d.at)) + (cached ? ', carregados por outra pessoa' : '') + (d.loading ? ' · sincronizando' : '');
   }
+  setSync('#day-sync', {at: d.at, cached: cached, loading: d.loading});
   renderCallout(cached, known);
 }
 function renderCallout(cached, known){
@@ -697,11 +778,11 @@ function renderDay(){
   var bars = $('#bars'); bars.innerHTML = '';
   s.per.slice().sort(function(a,b2){ return (b2.pct||0)-(a.pct||0); }).forEach(function(p){
     var sub = p.status !== 'ok' ? (p.status === 'noemail' ? 'sem agenda' : p.status === 'unknown' ? 'sem acesso' : p.status === 'loading' ? 'consultando' : 'sem dados')
-      : p.busy ? fmtDur(p.busy*SLOT) + ' reservadas' : 'sem reservas';
+      : p.room.capacity ? p.room.capacity + ' lugares' : '';
     var d = document.createElement('div'); d.className = 'bar';
     d.innerHTML = '<div class="gname">'+esc(p.room.name)+'<s>'+esc(sub)+'</s></div>'
       + '<div class="t"><i style="width:'+(p.pct||0)+'%"></i></div>'
-      + '<div class="n">'+esc(p.pct === null ? '—' : p.pct + '%')+(p.status === 'ok' ? '<s>'+esc(fmtShortDur(p.busy*SLOT))+'</s>' : '')+'</div>';
+      + '<div class="n">'+esc(p.pct === null ? '—' : p.pct + '%')+(p.status === 'ok' ? '<s>'+esc(p.busy ? fmtShortDur(p.busy*SLOT) : 'livre')+'</s>' : '')+'</div>';
     bars.appendChild(d);
   });
   renderHours(ds);
@@ -717,10 +798,15 @@ function renderHours(ds){
     var full = [], part = [], none = 0;
     state.rooms.forEach(function(r){
       if (rd(ds, r.id).status !== 'ok') { none++; return; }
-      var free = 0, tot = 0, firstBusy = null;
-      for (var k = aK; k < bK; k += SLOT){ tot++; if (cell(ds, r.id, k) === 'free') free++; else if (firstBusy === null) firstBusy = k; }
+      var free = 0, tot = 0, firstBusy = null, firstFree = null;
+      for (var k = aK; k < bK; k += SLOT){
+        tot++;
+        if (cell(ds, r.id, k) === 'free') { free++; if (firstFree === null) firstFree = k; }
+        else if (firstBusy === null) firstBusy = k;
+      }
       if (free === tot) full.push(r.name);
-      else if (free > 0) part.push(r.name + (firstBusy !== null && firstBusy > aK ? ' até ' + lbl(firstBusy) : ''));
+      else if (free > 0) part.push(r.name + (firstBusy !== null && firstBusy > aK ? ' até ' + lbl(firstBusy)
+                                            : firstFree !== null ? ' a partir de ' + lbl(firstFree) : ''));
     });
     if (full.length || part.length) any = true;
     rows.push({a:aK, b:bK, label: pad(h)+':00', end: bEnd === DAY_END ? '20:30' : pad(h+1)+':00', full: full, part: part, none: none});
@@ -749,6 +835,9 @@ function weekDays(ds){
 }
 function renderWeek(){
   var days = weekDays(state.day || todayStr());
+  setSync('#week-sync', {at: state.week.at, cached: state.week.from === 'cache', loading: state.week.loading, limit: WEEK_MS * 2});
+  $('#week-prog').textContent = state.week.loading ? state.week.done + '/' + state.week.total : '';
+  $('#week-load').disabled = state.week.loading || !state.mcp;
   $('#week-range').textContent = fmtShort(fromDateStr(days[0])) + ' – ' + fmtShort(fromDateStr(days[4]));
   var host = $('#week'); host.innerHTML = '';
   var head = document.createElement('div'); head.className = 'wrow';
@@ -765,21 +854,25 @@ function renderWeek(){
     host.appendChild(row);
   });
 }
-function loadWeek(){
-  if (state.week.loading || !state.mcp) return;
+function weekKey(ds){ return weekDays(ds || state.day || todayStr())[0]; }
+function weekStale(){ return !state.week.at || (Date.now() - state.week.at) > WEEK_MS; }
+function loadWeek(force){
+  var key = weekKey();
+  if (key !== state.week.key) { state.week.at = 0; state.week.from = ''; state.week.sent = ''; loadWeekCache(key, true); }
+  else loadWeekCache(key, false);
+  if (state.week.loading || !state.mcp) return Promise.resolve();
+  if (!force && state.week.key === key && !weekStale()) return Promise.resolve();
   var days = weekDays(state.day || todayStr());
   var rooms = state.rooms.filter(function(r){ return !!r.email; });
-  state.week.loading = true; state.week.done = 0; state.week.total = days.length * rooms.length;
-  $('#week-load').disabled = true;
-  var prog = $('#week-prog');
-  function tick(){ prog.textContent = state.week.done + '/' + state.week.total; }
-  tick();
+  if (!rooms.length) return Promise.resolve();
+  state.week.loading = true; state.week.done = 0; state.week.total = days.length * rooms.length; state.week.key = key;
+  renderWeek();
   var chain = Promise.resolve();
   days.forEach(function(d){
     if (!state.wk[d]) state.wk[d] = {};
     rooms.forEach(function(room){
       chain = chain.then(function(){
-        return enq(function(){ return fetchChunk(room, baseK(d), WSLOTS, WSLOT, false); }).then(function(p){
+        return enq(function(){ return fetchChunk(room, baseK(d), WSLOTS, WSLOT, force); }).then(function(p){
           var busy = 0, known = 0;
           for (var i=0;i<WSLOTS;i++){
             var k = baseK(d)+i*WSLOT, v = p.slots[k];
@@ -787,27 +880,45 @@ function loadWeek(){
             if (v === 'unknown' || (v === undefined && p.unknown === p.count)) continue;
             known++; if (!v || v === 'busy' || v === 'oof' || v === 'tentative') busy++;
           }
-          state.wk[d][room.id] = {status: 'ok', busy: busy, pct: known ? Math.round(busy/known*100) : 0};
-          state.week.done++; tick(); renderWeek();
-        }, function(){ state.wk[d][room.id] = {status:'error'}; state.week.done++; tick(); });
+          state.wk[d][room.id] = {status:'ok', busy: busy, pct: known ? Math.round(busy/known*100) : 0, from:'live'};
+          state.week.done++; renderWeek();
+        }, function(e){
+          var cur = state.wk[d][room.id];
+          if (!cur || cur.status !== 'ok') state.wk[d][room.id] = {status:'error'};
+          noteErr(e); state.week.done++; renderWeek();
+        });
       });
     });
   });
-  chain.then(function(){ state.week.loading = false; $('#week-load').disabled = false; prog.textContent = 'atualizado às ' + timeStr(new Date()); renderWeek(); },
-    function(){ state.week.loading = false; $('#week-load').disabled = false; prog.textContent = 'falha ao carregar'; });
+  return chain.then(function(){
+    state.week.loading = false;
+    var got = false;
+    days.forEach(function(d){ state.rooms.forEach(function(r){ var w = (state.wk[d]||{})[r.id]; if (w && w.status === 'ok' && w.from === 'live') got = true; }); });
+    if (got) { state.week.at = Date.now(); state.week.from = 'live'; saveWeek(key); }
+    renderWeek();
+  }, function(){ state.week.loading = false; renderWeek(); });
 }
 function renderAll(){ setStatus(); renderCards(); renderDay(); }
 function refresh(force, fresh){
   var days = [todayStr()], pd = state.day || todayStr();
   if (days.indexOf(pd) < 0) days.push(pd);
   days.forEach(function(d){
-    loadCache(d);
+    loadCache(d, force);
     ensureDay(d, force, fresh, renderAll).then(function(){ saveCache(d); renderAll(); });
   });
 }
 function setDay(ds){
-  state.day = ds; renderAll(); loadCache(ds);
+  state.day = ds; renderAll(); loadCache(ds, true);
   ensureDay(ds, false, false, renderAll).then(function(){ saveCache(ds); renderAll(); });
+  loadWeek(false);
+}
+/* rotinas: enquanto a página estiver aberta e visível, o dia se atualiza a cada
+   REFETCH_MS e a semana a cada WEEK_MS; nada é buscado com a aba escondida. */
+function tick(){
+  if (typeof document.hidden === 'boolean' && document.hidden) return;
+  renderAll();
+  refresh(false);
+  loadWeek(false);
 }
 function setFilter(f){
   state.filter = f; lsSet('salas:filter', f);
@@ -824,12 +935,13 @@ function init(){
       if (!srv || !srv.tools || !srv.tools.length) { state.connector = 'none'; state.warn = 'Conecte o Microsoft 365 em claude.ai → Configurações → Conectores para ver as agendas.'; }
       else if (srv.authStatus === 'needs_reauth') { state.connector = 'reauth'; state.warn = 'O Microsoft 365 precisa ser reconectado.'; }
       else state.connector = 'ok';
-    }, function(){}).then(function(){ refresh(true); autoDiscover(); });
+    }, function(){}).then(function(){ refresh(true); autoDiscover(); setTimeout(function(){ loadWeek(false); }, 1500); });
   }).catch(function(){ state.mcp = null; renderAll(); });
   window.claude.use('db').then(function(db){
     state.db = db || null; if (!db) return;
     var lc = null, ld = null;
-    loadCache(state.day || todayStr());
+    loadCache(state.day || todayStr(), true);
+    loadWeekCache(weekKey(), true);
     db.doc('config/rooms').onSnapshot(function(s){ if (s === lc) return; lc = s;
       state.cfg = s.exists ? normCfg(s.data()) : ROOMS_DEFAULT.map(function(r){ return Object.assign({}, r); });
       applyRooms(); renderAll(); autoDiscover(); }, function(){});
@@ -847,11 +959,14 @@ function start(){
   $('#next').addEventListener('click', function(){ setDay(addDays(state.day, 1)); });
   $('#today').addEventListener('click', function(){ setDay(todayStr()); });
   $('#reload').addEventListener('click', function(){ state.warn = ''; refresh(true, true); });
-  $('#week-load').addEventListener('click', loadWeek);
+  $('#week-load').addEventListener('click', function(){ state.warn = ''; loadWeek(true); });
   $('#f-all').addEventListener('click', function(){ setFilter('all'); });
   $('#f-free').addEventListener('click', function(){ setFilter('free'); });
   $('#f-busy').addEventListener('click', function(){ setFilter('busy'); });
-  setInterval(function(){ renderAll(); refresh(false); }, 60000);
+  setInterval(tick, TICK_MS);
+  document.addEventListener('visibilitychange', function(){ if (!document.hidden) tick(); });
+  window.addEventListener('focus', function(){ tick(); });
+  window.addEventListener('online', function(){ state.warn = ''; refresh(true); loadWeek(true); });
   init();
 }
 start();
