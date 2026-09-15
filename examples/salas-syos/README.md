@@ -25,25 +25,23 @@ Artifact: https://claude.ai/artifact/JKi9B4bk89hhQ85378zAHW
 
 | Informação | Origem | Disponível para |
 |---|---|---|
-| Livre/ocupado por sala | `outlook_find_available_time` (Graph findMeetingTimes) | Todos |
+| Livre/ocupado por sala | `outlook_find_available_time` (Graph findMeetingTimes) | Quem tem o conector Microsoft 365 |
 | Assunto e organizador | `outlook_calendar_search` na agenda do próprio usuário | Reuniões em que o usuário participa |
+| Retrato compartilhado | documento `cache/day-<data>` no armazenamento do artefato | Qualquer pessoa que abra a página |
 
-Um bloco ocupado só é nomeado quando a reunião está na agenda de quem abre a página; os
-demais aparecem como reservados, sem nome. A página não depende disso: a organização dos
-dados é por horário e por sala, não por quem reservou.
+Cada consulta usa a credencial de quem está olhando, nunca a de quem publicou. Quem não tem
+o conector não conseguiria ver nada, então a página guarda um retrato compactado da
+ocupação do dia — uma string de 54 caracteres por sala, `f` livre, `b` ocupada, `t`
+pendente, `u` sem dado — sempre que alguém com conector a carrega. Quem abre sem conector
+vê esse retrato, com o horário em que foi tirado e um convite para conectar. O dado ao vivo
+sempre tem precedência sobre o retrato; o retrato só preenche lacuna.
+
+O retrato guarda apenas livre/ocupado. Assunto e organizador nunca são gravados: eles são
+lidos ao vivo, por quem participa da reunião.
 
 A janela do dia tem 54 fatias de 15 min e o limite da API é 50 candidatos por chamada, então
 cada sala-dia é lida em duas chamadas. A grade da semana usa fatias de 30 min, uma chamada
-por sala-dia. Para que todos vejam todos os nomes, o
-administrador libera leitura no calendário de cada sala:
-
-```powershell
-Set-MailboxFolderPermission -Identity "Sala Cadeia do Frio:\Calendar" -User Default -AccessRights Reviewer
-```
-
-A agenda da sala não é legível pela API de eventos com a permissão padrão — apenas
-livre/ocupado. Isso foi verificado: ler o próprio calendário funciona, ler o da sala
-retorna `ErrorItemNotFound`.
+por sala-dia.
 
 ## Salas
 

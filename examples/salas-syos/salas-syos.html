@@ -138,6 +138,11 @@ section{background:var(--surface);border:1px solid var(--line);border-radius:var
 .wc.na{color:var(--faint);font-weight:400}
 .prog{font-size:12.5px;color:var(--faint)}
 .note{font-size:12.5px;color:var(--ink);background:var(--warn-soft);border-radius:var(--radius-s);padding:9px 11px;margin:0}
+.callout{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--warn);border-radius:var(--radius-s);padding:14px 16px;display:grid;gap:7px;box-shadow:var(--shadow)}
+.callout h3{margin:0;font-family:var(--display);font-size:15px;font-weight:600}
+.callout p{font-size:13px;color:var(--muted)}
+.callout ol{margin:0;padding-left:18px;font-size:13px;color:var(--muted);display:grid;gap:3px}
+.callout .cached{color:var(--ink);font-weight:600;font-size:13px}
 footer{font-size:12px;color:var(--faint);text-align:center;padding-top:4px}
 </style>
 
@@ -148,6 +153,8 @@ footer{font-size:12px;color:var(--faint);text-align:center;padding-top:4px}
     <p class="lede">Quem está livre agora, até quando, e qual o próximo horário de cada sala.</p>
     <div class="status" id="status"><span class="dot"></span><span id="status-text">Carregando agendas…</span></div>
   </header>
+
+  <div class="callout" id="callout" hidden></div>
 
   <section aria-labelledby="h-agora">
     <div class="head">
@@ -223,7 +230,8 @@ var state = {
   rooms: ROOMS_DEFAULT.map(function(r){ return Object.assign({}, r); }),
   days: {}, wk: {}, events: {}, day: null, filter: 'all',
   week: {days: [], loading: false, done: 0, total: 0},
-  mcp: undefined, db: undefined, cfg: null, disc: {}, discoverTried: false, warn: '', lastAt: 0
+  mcp: undefined, db: undefined, cfg: null, disc: {}, discoverTried: false, warn: '', lastAt: 0,
+  connector: 'checking', cache: {}, cacheSent: {}, cachedAt: {}
 };
 
 function lsGet(k, d){ try { var v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch(e){ return d; } }
@@ -310,7 +318,13 @@ function noteErr(e){ if (AUTH.indexOf(e && e.code) >= 0 || code(e) === 'tool_err
 
 /* agendas */
 function dayOf(ds){ if (!state.days[ds]) state.days[ds] = {}; return state.days[ds]; }
-function rd(ds, id){ return dayOf(ds)[id] || {status:'none'}; }
+function rd(ds, id){
+  var live = dayOf(ds)[id];
+  if (live && live.status === 'ok') return live;
+  var c = (state.cache[ds] || {})[id];
+  if (c) return {status:'ok', slots: c.slots, at: c.at, storedAt: c.at, fromCache: true};
+  return live || {status:'none'};
+}
 function stale(a){ return !a || !a.at || (Date.now() - a.at) > REFETCH_MS; }
 function ensureDay(ds, force, fresh, each){
   if (state.mcp) ensureEvents(ds, force).then(function(){ if (each) each(); });
@@ -480,6 +494,56 @@ function autoDiscover(){
   }, function(){});
 }
 
+/* cache compartilhado: quem tem conector alimenta, quem não tem enxerga */
+function cacheDoc(ds){ return 'cache/day-' + ds; }
+function saveCache(ds){
+  if (!state.db) return;
+  var rooms = {}, any = false;
+  state.rooms.forEach(function(r){
+    var a = rd(ds, r.id);
+    if (a.status !== 'ok' || a.fromCache) return;
+    var out = '';
+    for (var i=0;i<SLOTS;i++){
+      var c = cell(ds, r.id, baseK(ds)+i*SLOT);
+      out += c === 'free' ? 'f' : c === 'tent' ? 't' : c === 'busy' ? 'b' : 'u';
+    }
+    rooms[r.id] = out; any = true;
+  });
+  if (!any) return;
+  var body = JSON.stringify(rooms);
+  if (state.cacheSent[ds] === body && Date.now() - (state.cachedAt[ds] || 0) < 120000) return;
+  state.cacheSent[ds] = body; state.cachedAt[ds] = Date.now();
+  state.db.doc(cacheDoc(ds)).set({rooms: rooms, at: new Date().toISOString(), slots: SLOTS, start: DAY_START}).catch(function(){});
+}
+function loadCache(ds){
+  if (!state.db) return Promise.resolve();
+  return state.db.doc(cacheDoc(ds)).get().then(function(snap){
+    if (!snap || !snap.exists) return;
+    var d = snap.data() || {}, rooms = d.rooms || {}, at = Date.parse(d.at) || 0;
+    if (d.slots && d.slots !== SLOTS) return;
+    if (d.start !== undefined && d.start !== DAY_START) return;
+    var used = false;
+    state.rooms.forEach(function(r){
+      var str = rooms[r.id];
+      if (typeof str !== 'string' || str.length !== SLOTS) return;
+      var slots = {};
+      for (var i=0;i<SLOTS;i++){
+        var ch = str.charAt(i), k = baseK(ds)+i*SLOT;
+        slots[k] = ch === 'f' ? 'free' : ch === 't' ? 'tentative' : ch === 'b' ? 'busy' : 'unknown';
+      }
+      if (!state.cache[ds]) state.cache[ds] = {};
+      state.cache[ds][r.id] = {slots: slots, at: at};
+      used = true;
+    });
+    state.cachedAt[ds] = at;
+    if (used) { state.lastAt = Math.max(state.lastAt, at); renderAll(); }
+  }).catch(function(){});
+}
+function usingCache(){
+  var ds = state.day || todayStr();
+  return state.rooms.some(function(r){ var a = rd(ds, r.id); return a.status === 'ok' && a.fromCache; });
+}
+
 /* estado agora */
 function nowOf(id){
   var ds = todayStr(), a = rd(ds, id);
@@ -507,12 +571,29 @@ function rank(st){
 
 /* render */
 function setStatus(){
-  var el = $('#status'), t = $('#status-text');
-  if (state.warn) { el.className = 'status warn'; t.textContent = state.warn; return; }
-  el.className = 'status';
-  var known = state.rooms.filter(function(r){ return rd(todayStr(), r.id).status === 'ok'; }).length;
-  t.textContent = state.lastAt ? known + ' de ' + state.rooms.length + ' salas · atualizado às ' + timeStr(new Date(state.lastAt))
-    : (state.mcp === null ? 'Sem conexão com o Microsoft 365 nesta visualização.' : 'Carregando agendas…');
+  var el = $('#status'), t = $('#status-text'), ds = state.day || todayStr();
+  var known = state.rooms.filter(function(r){ return rd(ds, r.id).status === 'ok'; }).length;
+  var cached = usingCache();
+  if (state.warn && !known) { el.className = 'status warn'; t.textContent = state.warn; }
+  else {
+    el.className = 'status';
+    t.textContent = !state.lastAt ? 'Carregando agendas…'
+      : known + ' de ' + state.rooms.length + ' salas · ' + (cached ? 'dados de ' : 'atualizado às ') + timeStr(new Date(state.lastAt)) + (cached ? ', carregados por outra pessoa' : '');
+  }
+  renderCallout(cached, known);
+}
+function renderCallout(cached, known){
+  var el = $('#callout');
+  var noConn = state.mcp === null || state.connector === 'none' || state.connector === 'reauth';
+  if (!noConn) { el.hidden = true; return; }
+  el.hidden = false;
+  var head = state.connector === 'reauth' ? 'Reconecte o Microsoft 365' : 'Conecte o Microsoft 365 para ver ao vivo';
+  el.innerHTML = '<h3>' + esc(head) + '</h3>'
+    + (cached ? '<p class="cached">Você está vendo o último retrato salvo, de ' + esc(timeStr(new Date(state.lastAt))) + ', carregado por alguém que tem o conector.</p>'
+              : '<p>Sem o conector, esta página não consegue ler a agenda das salas na sua conta.</p>')
+    + '<ol><li>Abra claude.ai → Configurações → Conectores.</li>'
+    + '<li>' + (state.connector === 'reauth' ? 'Reconecte' : 'Adicione') + ' o Microsoft 365 com a sua conta da SyOS.</li>'
+    + '<li>Volte aqui, recarregue e permita o acesso quando for pedido.</li></ol>';
 }
 function renderCards(){
   $('#now-time').textContent = '· ' + timeStr(new Date());
@@ -719,28 +800,36 @@ function renderAll(){ setStatus(); renderCards(); renderDay(); }
 function refresh(force, fresh){
   var days = [todayStr()], pd = state.day || todayStr();
   if (days.indexOf(pd) < 0) days.push(pd);
-  days.forEach(function(d){ ensureDay(d, force, fresh, renderAll).then(renderAll); });
+  days.forEach(function(d){
+    loadCache(d);
+    ensureDay(d, force, fresh, renderAll).then(function(){ saveCache(d); renderAll(); });
+  });
 }
-function setDay(ds){ state.day = ds; renderAll(); ensureDay(ds, false, false, renderAll).then(renderAll); }
+function setDay(ds){
+  state.day = ds; renderAll(); loadCache(ds);
+  ensureDay(ds, false, false, renderAll).then(function(){ saveCache(ds); renderAll(); });
+}
 function setFilter(f){
   state.filter = f; lsSet('salas:filter', f);
   ['all','free','busy'].forEach(function(x){ $('#f-'+x).setAttribute('aria-pressed', x === f ? 'true' : 'false'); });
   renderCards();
 }
 function init(){
-  if (!window.claude || typeof window.claude.use !== 'function') { state.mcp = null; state.db = null; renderAll(); return; }
+  if (!window.claude || typeof window.claude.use !== 'function') { state.mcp = null; state.db = null; state.connector = 'none'; renderAll(); return; }
   window.claude.use('mcp').then(function(m){
     state.mcp = m || null;
-    if (!m) { renderAll(); return; }
+    if (!m) { state.connector = 'none'; renderAll(); return; }
     return m.listTools(SERVER).then(function(lt){
       var srv = (lt && lt.servers || []).filter(function(s){ return s.server === SERVER; })[0];
-      if (!srv) state.warn = 'Conecte o Microsoft 365 em claude.ai → Configurações → Conectores para ver as agendas.';
-      else if (srv.authStatus === 'needs_reauth') state.warn = 'O Microsoft 365 precisa ser reconectado.';
+      if (!srv || !srv.tools || !srv.tools.length) { state.connector = 'none'; state.warn = 'Conecte o Microsoft 365 em claude.ai → Configurações → Conectores para ver as agendas.'; }
+      else if (srv.authStatus === 'needs_reauth') { state.connector = 'reauth'; state.warn = 'O Microsoft 365 precisa ser reconectado.'; }
+      else state.connector = 'ok';
     }, function(){}).then(function(){ refresh(true); autoDiscover(); });
   }).catch(function(){ state.mcp = null; renderAll(); });
   window.claude.use('db').then(function(db){
     state.db = db || null; if (!db) return;
     var lc = null, ld = null;
+    loadCache(state.day || todayStr());
     db.doc('config/rooms').onSnapshot(function(s){ if (s === lc) return; lc = s;
       state.cfg = s.exists ? normCfg(s.data()) : ROOMS_DEFAULT.map(function(r){ return Object.assign({}, r); });
       applyRooms(); renderAll(); autoDiscover(); }, function(){});
