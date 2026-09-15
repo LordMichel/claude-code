@@ -15,16 +15,34 @@ Artifact: https://claude.ai/artifact/JKi9B4bk89hhQ85378zAHW
    tempo.
 2. **Ocupação do dia** — linha do tempo das 7h às 20h30, de 15 em 15 min, com marcador do
    horário atual e navegação por dia. Indicadores em percentual e em horas.
-3. **Disponibilidade por horário** — uma faixa por hora com quantas e quais salas estão
-   livres; salas livres só em parte da faixa aparecem com contorno tracejado e o horário
-   em que ficam ocupadas.
+3. **Disponibilidade por horário** — uma faixa por hora com **todas** as salas, cada uma
+   com a lotação e uma cor: verde livre a faixa toda, âmbar livre só em parte (com "até
+   HH:MM" ou "a partir de HH:MM"), vermelho ocupada, roxo pendente. Uma sala reservada
+   fica vermelha na faixa em vez de simplesmente sumir da lista.
 4. **Mais e menos reservadas** — barras por sala, em percentual e horas.
 5. **Semana** — grade de segunda a sexta em percentual e horas, carregada sozinha ao abrir
    a página e revista a cada 20 min.
 
+**Atualizar tudo**, no cabeçalho, refaz o painel inteiro ignorando todo cache: as dez
+leituras do dia e as vinte e cinco da semana saem com `refresh: true`, a agenda do usuário
+é relida e os dois retratos são regravados.
+
 Cada bloco carrega um carimbo de sincronização — bolinha verde e `sincronizado às HH:MM`
 quando o dado é seu e ao vivo, `dados de HH:MM` quando veio do retrato compartilhado,
 âmbar quando está velho e pulsando enquanto busca.
+
+## Reserva que a sala não confirmou
+
+Uma reunião na agenda do usuário pode nomear uma sala sem que a sala tenha aceitado: caixas
+de recurso do Exchange recusam automaticamente pedidos fora do horário de funcionamento,
+acima da duração máxima ou além da janela de agendamento. O resultado é uma reunião que
+existe para quem convidou e não existe para a sala — e o painel, que lê a agenda da sala,
+mostra livre com razão.
+
+A página cruza as duas leituras: quando um evento do próprio usuário nomeia uma sala e a
+agenda daquela sala está livre no intervalo inteiro, aparece um aviso com o assunto, o
+horário e a sala, sugerindo conferir a resposta da sala no Outlook. O cruzamento só usa
+dado ao vivo, nunca o retrato compartilhado, que poderia estar velho.
 
 ## Rotinas de atualização
 
@@ -136,6 +154,12 @@ Conferido contra o cálculo feito à parte a partir das mesmas respostas:
 | FicaFrio | 15:00–15:30 | 2 blocos | 4% · 30min |
 | Super Easy | 14:30–15:30 | 4 blocos | 7% · 1h |
 | Syos Easy | 14:00–14:30, 15:00–17:00 | 10 blocos | 19% · 2h30 |
+
+O aviso de reserva não confirmada foi exercitado com os dois eventos reais da agenda do
+usuário no dia: "Michel Teste" às 15:00 com a FicaFrio, que a sala aceitou e portanto não
+gera aviso, e "TESTE" às 19:00 com a mesma sala, que a agenda da FicaFrio não registrou —
+esse gera. O botão **Atualizar tudo** foi medido no mesmo arranjo: um clique produz
+exatamente 10 leituras do dia e 25 da semana, todas com `refresh: true`.
 
 Os quatro estados de conexão foram exercitados no mesmo arranjo: com consentimento
 pendente a página faz zero chamadas e mostra o botão; o clique concedendo leva a 36
