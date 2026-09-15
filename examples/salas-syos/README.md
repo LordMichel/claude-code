@@ -91,6 +91,24 @@ pessoa da organização pode escrever. A varredura roda no máximo uma vez a cad
 por pessoa; **Descobrir agora** força a execução. A configuração em `config/rooms` (só
 administradores) tem precedência.
 
+## Conectar sem sair da página
+
+O aviso do topo muda conforme o que falta, lendo `permissions.state("mcp:Microsoft 365")`
+— que nunca dispara diálogo — e só perguntando no clique:
+
+| Estado | O que aparece |
+|---|---|
+| `prompt` — conector na conta, página não autorizada | botão **Permitir acesso**, que chama `permissions.request(["mcp:Microsoft 365"])` e, ao ser concedido, refaz o `listTools` e carrega tudo sem recarregar |
+| `denied` — recusado nesta sessão | explicação e botão de recarregar; um novo `request` não reabre o diálogo no mesmo carregamento |
+| sem conector / `unavailable` | link **Abrir Conectores no claude.ai** mais os três passos |
+| `needs_reauth` | mesmo link, com o texto de reconexão |
+
+Não há como uma página adicionar um conector à conta de quem a abre: isso é ajuste de conta
+no claude.ai. O botão cobre o consentimento; o link leva ao lugar certo para o resto. A
+linha de status do cabeçalho é derivada do mesmo estado, para não contradizer o aviso.
+
+`permissions` é embutido no runtime e **não** entra em `capabilities`.
+
 ## Capacidades declaradas
 
 ```json
@@ -118,6 +136,11 @@ Conferido contra o cálculo feito à parte a partir das mesmas respostas:
 | FicaFrio | 15:00–15:30 | 2 blocos | 4% · 30min |
 | Super Easy | 14:30–15:30 | 4 blocos | 7% · 1h |
 | Syos Easy | 14:00–14:30, 15:00–17:00 | 10 blocos | 19% · 2h30 |
+
+Os quatro estados de conexão foram exercitados no mesmo arranjo: com consentimento
+pendente a página faz zero chamadas e mostra o botão; o clique concedendo leva a 36
+chamadas e aos dados completos; a recusa cai no aviso de recarregar; e sem conector
+aparece o link para os Conectores.
 
 Também conferidos: `Livres agora 4/5`, `Ocupação do dia 11% (7h30 de 67h30)`,
 `Pico 15:00 com 3 salas`, a ordem dos cartões, as 14 faixas horárias e a gravação dos dois

@@ -151,6 +151,11 @@ section{background:var(--surface);border:1px solid var(--line);border-radius:var
 .callout ol{margin:0;padding-left:18px;font-size:13px;color:var(--muted);display:grid;gap:3px}
 .callout .cached{color:var(--ink);font-weight:600;font-size:13px}
 .callout[hidden],.note[hidden]{display:none}
+.callout .acts{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:3px}
+.callout .acts .btn{text-decoration:none;display:inline-block}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.primary:hover{filter:brightness(1.08);color:#fff}
+.btn.primary:disabled{opacity:.6}
 footer{font-size:12px;color:var(--faint);text-align:center;padding-top:4px}
 </style>
 
@@ -231,6 +236,8 @@ var ROOMS_DEFAULT = [
 ];
 var KNOWN = ['needs_reauth','server_not_connected','selection_required','server_not_found','server_unavailable','not_in_manifest','blocked_by_policy','approval_required','tool_error','bad_request','cancelled','rate_limited','upstream_error','not_granted','capability_disabled','capability_removed','transform_error','consent_required','user_changed'];
 var AUTH = ['needs_reauth','server_not_connected','selection_required','not_in_manifest','not_granted','capability_disabled','consent_required'];
+var PERM = 'mcp:' + SERVER;
+var SETTINGS = 'https://claude.ai/customize/connectors';
 var TZ = 'America/Sao_Paulo';
 try { TZ = Intl.DateTimeFormat().resolvedOptions().timeZone || TZ; } catch(e){}
 var EMAIL_RE = /^[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$/;
@@ -240,7 +247,8 @@ var state = {
   days: {}, wk: {}, events: {}, day: null, filter: 'all',
   week: {loading: false, done: 0, total: 0, at: 0, from: '', key: '', sent: '', sentAt: 0, read: 0},
   mcp: undefined, db: undefined, cfg: null, disc: {}, discoverTried: false, warn: '', lastAt: 0,
-  connector: 'checking', cache: {}, cacheSent: {}, cachedAt: {}, cacheRead: {}
+  connector: 'checking', cache: {}, cacheSent: {}, cachedAt: {}, cacheRead: {},
+  perms: null, perm: 'unknown', asking: false
 };
 
 function lsGet(k, d){ try { var v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch(e){ return d; } }
@@ -653,28 +661,76 @@ function rank(st){
 /* render */
 function setStatus(){
   var el = $('#status'), t = $('#status-text'), ds = state.day || todayStr();
-  var d = daySync(ds), known = d.ok, cached = usingCache();
-  if (state.warn && !known) { el.className = 'status warn'; t.textContent = state.warn; }
+  var d = daySync(ds), known = d.ok, cached = usingCache(), w = warnText();
+  if (w && !known) { el.className = 'status warn'; t.textContent = w; }
   else {
     el.className = 'status';
     t.textContent = !d.at ? 'Carregando agendas…'
       : known + ' de ' + state.rooms.length + ' salas · ' + (cached ? 'dados de ' : 'atualizado às ') + timeStr(new Date(d.at)) + (cached ? ', carregados por outra pessoa' : '') + (d.loading ? ' · sincronizando' : '');
   }
   setSync('#day-sync', {at: d.at, cached: cached, loading: d.loading});
-  renderCallout(cached, known);
+  renderCallout(cached);
 }
-function renderCallout(cached, known){
-  var el = $('#callout');
-  var noConn = state.mcp === null || state.connector === 'none' || state.connector === 'reauth';
-  if (!noConn) { el.hidden = true; return; }
+function warnText(){
+  switch (calloutMode()) {
+    case 'ask': return 'Falta autorizar esta página a ler a agenda das salas.';
+    case 'denied': return 'Acesso à agenda recusado nesta sessão.';
+    case 'reauth': return 'O Microsoft 365 precisa ser reconectado.';
+    case 'add': return 'Conecte o Microsoft 365 em claude.ai → Configurações → Conectores para ver as agendas.';
+    default: return state.warn;
+  }
+}
+function calloutMode(){
+  if (state.connector === 'ok' || state.connector === 'checking') return null;
+  if (state.perm === 'prompt') return 'ask';      /* o conector existe, falta permitir para esta página */
+  if (state.perm === 'denied') return 'denied';   /* recusado agora; só um recarregamento reabre */
+  if (state.connector === 'reauth') return 'reauth';
+  if (state.mcp === null || state.connector === 'none' || state.perm === 'unavailable') return 'add';
+  return null;
+}
+function renderCallout(cached){
+  var el = $('#callout'), mode = calloutMode();
+  if (!mode) { el.hidden = true; return; }
   el.hidden = false;
-  var head = state.connector === 'reauth' ? 'Reconecte o Microsoft 365' : 'Conecte o Microsoft 365 para ver ao vivo';
-  el.innerHTML = '<h3>' + esc(head) + '</h3>'
-    + (cached ? '<p class="cached">Você está vendo o último retrato salvo, de ' + esc(timeStr(new Date(state.lastAt))) + ', carregado por alguém que tem o conector.</p>'
-              : '<p>Sem o conector, esta página não consegue ler a agenda das salas na sua conta.</p>')
-    + '<ol><li>Abra claude.ai → Configurações → Conectores.</li>'
-    + '<li>' + (state.connector === 'reauth' ? 'Reconecte' : 'Adicione') + ' o Microsoft 365 com a sua conta da SyOS.</li>'
-    + '<li>Volte aqui, recarregue e permita o acesso quando for pedido.</li></ol>';
+  var at = daySync(state.day || todayStr()).at;
+  var visto = cached && at ? '<p class="cached">Enquanto isso, você está vendo o último retrato salvo, de '
+      + esc(timeStr(new Date(at))) + ', carregado por alguém que já tem o conector.</p>' : '';
+  if (mode === 'ask'){
+    el.innerHTML = '<h3>Permita o acesso à agenda das salas</h3>'
+      + '<p>O Microsoft 365 já está na sua conta. Falta autorizar esta página a consultar se as salas estão livres — a leitura usa a sua credencial e nada sai daqui.</p>'
+      + visto
+      + '<div class="acts"><button class="btn primary" type="button" id="ask"' + (state.asking ? ' disabled' : '') + '>'
+      + (state.asking ? 'Aguardando…' : 'Permitir acesso') + '</button></div>';
+    var b = $('#ask'); if (b) b.addEventListener('click', askPerm);
+    return;
+  }
+  if (mode === 'denied'){
+    el.innerHTML = '<h3>Acesso não autorizado nesta sessão</h3>'
+      + '<p>Você recusou o acesso agora há pouco. O pedido só pode ser refeito em um novo carregamento.</p>'
+      + visto
+      + '<div class="acts"><button class="btn primary" type="button" id="again">Recarregar a página</button></div>';
+    var r = $('#again'); if (r) r.addEventListener('click', function(){ location.reload(); });
+    return;
+  }
+  var reauth = mode === 'reauth';
+  el.innerHTML = '<h3>' + (reauth ? 'Reconecte o Microsoft 365' : 'Conecte o Microsoft 365 para ver ao vivo') + '</h3>'
+    + '<p>' + (reauth ? 'A ligação com o Microsoft 365 expirou e precisa ser refeita na sua conta do Claude.'
+                     : 'Esta página lê a agenda das salas pelo conector do Microsoft 365, e ele ainda não está na sua conta do Claude.') + '</p>'
+    + visto
+    + '<div class="acts"><a class="btn primary" href="' + SETTINGS + '" target="_blank" rel="noopener">Abrir Conectores no claude.ai</a></div>'
+    + '<ol><li>Na página que abrir, ' + (reauth ? 'reconecte' : 'adicione') + ' o Microsoft 365 com a sua conta da SyOS.</li>'
+    + '<li>Volte para cá e recarregue.</li>'
+    + '<li>Autorize o acesso quando esta página pedir.</li></ol>';
+}
+function askPerm(){
+  if (!state.perms || state.asking) return;
+  state.asking = true; renderAll();
+  state.perms.request([PERM]).then(function(m){
+    state.asking = false;
+    state.perm = (m && m[PERM]) || state.perm;
+    if (state.perm === 'granted') { state.warn = ''; bootMcp(); }
+    renderAll();
+  }, function(){ state.asking = false; renderAll(); });
 }
 function renderCards(){
   $('#now-time').textContent = '· ' + timeStr(new Date());
@@ -743,7 +799,7 @@ function renderDay(){
   var withData = s.per.filter(function(p){ return p.status === 'ok'; }).length;
   [[today ? (kn ? fr + '/' + kn : '—') : '—', 'Livres agora', today ? (kn ? 'de ' + kn + ' com agenda' : 'sem agenda lida') : 'só hoje'],
    [s.pct === null ? '—' : s.pct + '%', 'Ocupação do dia', s.known ? fmtDur(s.busy*SLOT) + ' de ' + fmtDur(s.known*SLOT) : withData + ' de ' + state.rooms.length + ' salas'],
-   [fmtDur(s.busy*SLOT), 'Horas reservadas', withData + ' de ' + state.rooms.length + ' salas · 7h–20h30'],
+   [s.known ? fmtDur(s.busy*SLOT) : '—', 'Horas reservadas', withData + ' de ' + state.rooms.length + ' salas · 7h–20h30'],
    [s.peak === null ? '—' : lbl(s.peak), 'Pico', s.peak === null ? 'sem reservas' : s.peakN + ' salas ocupadas']]
   .forEach(function(x, i){
     var el = $('#kpis').children[i];
@@ -925,18 +981,30 @@ function setFilter(f){
   ['all','free','busy'].forEach(function(x){ $('#f-'+x).setAttribute('aria-pressed', x === f ? 'true' : 'false'); });
   renderCards();
 }
-function init(){
-  if (!window.claude || typeof window.claude.use !== 'function') { state.mcp = null; state.db = null; state.connector = 'none'; renderAll(); return; }
-  window.claude.use('mcp').then(function(m){
+function bootMcp(){
+  return window.claude.use('mcp').then(function(m){
     state.mcp = m || null;
     if (!m) { state.connector = 'none'; renderAll(); return; }
     return m.listTools(SERVER).then(function(lt){
       var srv = (lt && lt.servers || []).filter(function(s){ return s.server === SERVER; })[0];
-      if (!srv || !srv.tools || !srv.tools.length) { state.connector = 'none'; state.warn = 'Conecte o Microsoft 365 em claude.ai → Configurações → Conectores para ver as agendas.'; }
+      if (!srv || !srv.tools || !srv.tools.length) { state.connector = 'none'; if (state.perm !== 'prompt') state.warn = 'Conecte o Microsoft 365 em claude.ai → Configurações → Conectores para ver as agendas.'; }
       else if (srv.authStatus === 'needs_reauth') { state.connector = 'reauth'; state.warn = 'O Microsoft 365 precisa ser reconectado.'; }
-      else state.connector = 'ok';
-    }, function(){}).then(function(){ refresh(true); autoDiscover(); setTimeout(function(){ loadWeek(false); }, 1500); });
+      else { state.connector = 'ok'; state.warn = ''; }
+    }, function(){}).then(function(){ renderAll(); refresh(true); autoDiscover(); setTimeout(function(){ loadWeek(false); }, 1500); });
   }).catch(function(){ state.mcp = null; renderAll(); });
+}
+/* permissions é embutido: lemos sem nunca perguntar, e só perguntamos no clique */
+function initPerm(){
+  return window.claude.use('permissions').then(function(pm){
+    if (!pm) return;
+    state.perms = pm;
+    return pm.state(PERM).then(function(st){ state.perm = st; renderAll(); }, function(){});
+  }).catch(function(){});
+}
+function init(){
+  if (!window.claude || typeof window.claude.use !== 'function') { state.mcp = null; state.db = null; state.connector = 'none'; state.perm = 'unavailable'; renderAll(); return; }
+  initPerm();
+  bootMcp();
   window.claude.use('db').then(function(db){
     state.db = db || null; if (!db) return;
     var lc = null, ld = null;
