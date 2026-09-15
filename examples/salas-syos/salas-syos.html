@@ -303,13 +303,13 @@ code{font-size:.92em;background:var(--surface-2);padding:1px 5px;border-radius:4
       <p class="small" style="margin-top:10px">O Microsoft 365 entrega a agenda das salas como livre/ocupado para todo mundo, mas o assunto e o organizador só aparecem para quem participa da reunião. Por isso esta página nomeia as reservas em que você está e marca as demais como “reservada”. Para que todos vejam todos os nomes, o administrador precisa dar permissão de leitura no calendário de cada sala, com <code>Set-MailboxFolderPermission -Identity "Sala X:\Calendar" -User Default -AccessRights Reviewer</code>.</p>
     </details>
     <details id="cfg-details">
-      <summary>Configurar salas (administradores da página): capacidade e e-mail de cada sala</summary>
+      <summary>Salas cadastradas e como a página descobre cada uma</summary>
       <div class="cfg" id="cfg"></div>
       <div class="cfg-foot">
         <span class="small" id="cfg-status"></span>
-        <span style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn secondary sm" id="cfg-scan" type="button">Descobrir e-mails</button><button class="btn secondary sm" id="cfg-save" type="button">Salvar para todos</button></span>
+        <span style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn secondary sm" id="cfg-scan" type="button">Descobrir agora</button><button class="btn secondary sm" id="cfg-save" type="button">Salvar para todos</button></span>
       </div>
-      <p class="small" style="margin-top:10px">O e-mail da sala é o endereço da caixa de recurso no Exchange. Na SyOS ele tem sufixo gerado, como <code>SalaCadeiadoFrio…@syos.com</code>, então não dá para adivinhar. “Descobrir e-mails” procura salas já convidadas nas suas reuniões. Também aparece no Outlook: abra a reunião, adicione a sala por Localizar salas e veja o endereço na lista de participantes.</p>
+      <p class="small" style="margin-top:10px">Para ler a agenda de uma sala o Microsoft 365 exige o endereço da caixa de recurso dela, que tem sufixo gerado (<code>SalaCadeiadoFrio…@syos.com</code>) e não pode ser adivinhado. Você não precisa procurá-lo: sempre que alguém que usa esta página tiver convidado a sala para uma reunião, a página aprende o endereço e passa a valer para todo mundo. Quem quiser adiantar é só clicar em Descobrir agora.</p>
     </details>
   </footer>
 </div>
@@ -341,6 +341,7 @@ var state = {
   view: 'panel',
   rooms: ROOMS_DEFAULT.map(function(r){ return Object.assign({}, r); }),
   roomId: null, participants: [], days: {}, events: {}, panelDay: null,
+  cfg: null, disc: {}, discoverTried: false,
   week: {days: [], loading: false, done: 0, total: 0, cancel: false},
   mcp: undefined, db: undefined, connector: 'checking', booking: false, sent: null,
   cfgSource: 'default', cfgSaving: false, cfgBuilt: false, dbError: null, canEdit: null, scanning: false
@@ -1068,8 +1069,11 @@ function cfgStatusText(){
   if (!state.db) return 'Conectando ao armazenamento…';
   if (state.cfgSaving) return 'Salvando…';
   var missing = state.rooms.filter(function(r){ return !r.email; }).length;
-  return (state.cfgSource === 'db' ? 'Configuração salva para todos. ' : 'Ainda não configurado. ')
-    + (missing ? missing + ' sala' + (missing>1?'s':'') + ' sem e-mail.' : 'Todas as salas com e-mail.');
+  var disc = state.rooms.filter(function(r){ return r.source === 'disc'; }).length;
+  if (state.scanning) return 'Procurando salas nas suas reuniões…';
+  return (missing ? missing + ' sala' + (missing>1?'s':'') + ' ainda sem agenda. ' : 'Todas as salas com agenda. ')
+    + (disc ? disc + ' descoberta' + (disc>1?'s':'') + ' automaticamente. ' : '')
+    + 'A página aprende o endereço sozinha quando alguém convida a sala para uma reunião.';
 }
 function buildCfg(){
   var host = $('#cfg'); host.innerHTML = '';
@@ -1078,7 +1082,7 @@ function buildCfg(){
     var row = document.createElement('div'); row.className = 'cfg-row';
     row.innerHTML = '<span class="rn">' + esc(r.name) + '</span>' +
       '<input type="number" min="1" max="' + CAP_MAX + '" id="cap-' + r.id + '" aria-label="Capacidade de ' + esc(r.name) + '" placeholder="—">' +
-      '<input type="email" id="mail-' + r.id + '" aria-label="E-mail da sala ' + esc(r.name) + '" placeholder="Sala…@syos.com" spellcheck="false" maxlength="254">';
+      '<input type="email" id="mail-' + r.id + '" aria-label="E-mail da sala ' + esc(r.name) + '" placeholder="descoberto automaticamente" spellcheck="false" maxlength="254">';
     host.appendChild(row);
     $$('input', row).forEach(function(inp){ inp.addEventListener('input', function(){ inp.dataset.dirty = '1'; }); });
   });
@@ -1117,10 +1121,10 @@ function saveCfg(){
     s.textContent = code === 'invalid_argument' ? 'Não foi possível salvar: só quem pode editar esta página consegue alterar a configuração.' : code === 'quota_exceeded' ? 'Limite de armazenamento atingido.' : code === 'revoked' ? 'Seu acesso a esta página mudou; recarregue.' : 'Não foi possível salvar' + (e && e.message ? ': ' + String(e.message).slice(0, 120) : '.');
   });
 }
-function scanRooms(){
+function scanRooms(silent){
   if (!state.mcp || state.scanning) return;
   state.scanning = true; renderCfg();
-  var s = $('#cfg-status'); s.textContent = 'Procurando salas nas suas reuniões…';
+  var s = $('#cfg-status'); if (!silent) s.textContent = 'Procurando salas nas suas reuniões…';
   var after = addDays(dateStr(new Date()), -120), before = addDays(dateStr(new Date()), 60);
   enqueue(function(){ return callRead('outlook_calendar_search', {query:'*', afterDateTime: after, beforeDateTime: before, limit: 25, offset: 0}); })
   .then(function(res){
@@ -1139,19 +1143,61 @@ function scanRooms(){
         });
       });
     });
-    var ids = Object.keys(found), added = 0;
-    ids.forEach(function(id){
-      var inp = $('#mail-'+id);
-      if (inp && cleanEmail(inp.value) !== found[id]) { inp.value = found[id]; inp.dataset.dirty = '1'; added++; }
+    var novos = {};
+    Object.keys(found).forEach(function(id){
+      var room = roomById(id);
+      if (room && room.email === found[id]) return;
+      if (state.disc[id] === found[id]) return;
+      novos[id] = found[id];
     });
-    state.scanning = false; renderCfg();
-    s.textContent = added ? added + ' e-mail' + (added>1?'s':'') + ' preenchido' + (added>1?'s':'') + '. Confira e clique em Salvar para todos.'
-      : ids.length ? 'As salas encontradas já estão cadastradas.'
-      : 'Nenhuma sala encontrada nas suas reuniões. Adicione a sala a uma reunião no Outlook e tente de novo.';
+    state.scanning = false;
+    var nNew = Object.keys(novos).length;
+    if (nNew && state.db) {
+      var merged = Object.assign({}, state.disc, novos);
+      state.disc = merged; applyRooms();
+      state.db.doc('discovered/rooms').set({rooms: merged, updatedAt: new Date().toISOString()}).then(function(){
+        if (!silent) $('#cfg-status').textContent = nNew + ' sala' + (nNew>1?'s':'') + ' descoberta' + (nNew>1?'s':'') + ' e compartilhada' + (nNew>1?'s':'') + ' com todos.';
+      }, function(){
+        if (!silent) $('#cfg-status').textContent = nNew + ' sala' + (nNew>1?'s':'') + ' descoberta' + (nNew>1?'s':'') + ', mas não foi possível compartilhar. Vale só para você nesta sessão.';
+      });
+    } else {
+      renderCfg();
+      if (!silent) s.textContent = Object.keys(found).length ? 'As salas encontradas já estão cadastradas.'
+        : 'Nenhuma sala encontrada nas suas reuniões. Adicione a sala a uma reunião no Outlook e tente de novo.';
+    }
   }, function(e){
     state.scanning = false; renderCfg(); noteAuthError(e);
-    s.textContent = 'Não foi possível procurar: ' + errText(e);
+    if (!silent) s.textContent = 'Não foi possível procurar: ' + errText(e);
   });
+}
+function applyRooms(){
+  var cfg = state.cfg || ROOMS_DEFAULT.map(function(r){ return Object.assign({}, r); });
+  var next = cfg.map(function(c){
+    var disc = state.disc[c.id];
+    var email = c.email || (EMAIL_RE.test(String(disc||'')) ? disc : '');
+    return {id: c.id, name: c.name, capacity: c.capacity, email: email, source: c.email ? 'cfg' : (email ? 'disc' : '')};
+  });
+  var changed = JSON.stringify(next) !== JSON.stringify(state.rooms);
+  state.rooms = next;
+  if (changed) { state.days = {}; state.events = {}; state.week.days = []; renderRooms(); refreshAll(true); }
+  renderCfg();
+  return changed;
+}
+function normalizeDisc(data){
+  var out = {}; var src = data && data.rooms;
+  if (src && typeof src === 'object') Object.keys(src).forEach(function(id){
+    var m = cleanEmail(src[id]);
+    if (m.length <= 254 && EMAIL_RE.test(m) && ROOMS_DEFAULT.some(function(r){ return r.id === id; })) out[id] = m;
+  });
+  return out;
+}
+function autoDiscover(){
+  if (state.discoverTried || !state.mcp || !state.db) return;
+  if (!state.rooms.some(function(r){ return !r.email; })) return;
+  var lastRun = lsGet('salas-syos:scan-at', 0);
+  if (typeof lastRun === 'number' && Date.now() - lastRun < 6*3600000) return;
+  state.discoverTried = true; lsSet('salas-syos:scan-at', Date.now());
+  scanRooms(true);
 }
 function normalizeCfg(data){
   var byId = {}; if (data && Array.isArray(data.rooms)) data.rooms.forEach(function(r){ if (r && typeof r === 'object' && typeof r.id === 'string') byId[r.id] = r; });
@@ -1184,20 +1230,23 @@ function initCapabilities(){
       else if (!srv.tools || !srv.tools.length) { state.connector = 'not_connected'; setConn('warn', 'Microsoft 365: escolha o conector quando for solicitado.'); }
       else { state.connector = 'connected'; setConn('on', 'Microsoft 365 conectado como você. A primeira consulta pede sua permissão.'); }
     }, function(){ state.connector = 'unknown'; setConn('', 'Status do Microsoft 365 não verificado; a primeira consulta vai informar.'); })
-    .then(function(){ renderCfg(); refreshAll(true); });
+    .then(function(){ renderCfg(); refreshAll(true); autoDiscover(); });
   }).catch(function(){ state.mcp = null; state.connector = 'nomcp'; setConn('off', 'Conector indisponível: reservas abrem no Outlook.'); refreshAll(true); });
   window.claude.use('db').then(function(db){
     state.db = db || null; renderCfg();
     if (!db) return;
-    var last = null;
+    var lastCfg = null, lastDisc = null;
     db.doc('config/rooms').onSnapshot(function(snap){
-      if (snap === last) return; last = snap;
-      var next = snap.exists ? normalizeCfg(snap.data()) : ROOMS_DEFAULT.map(function(r){ return Object.assign({}, r); });
-      var changed = JSON.stringify(next) !== JSON.stringify(state.rooms);
+      if (snap === lastCfg) return; lastCfg = snap;
+      state.cfg = snap.exists ? normalizeCfg(snap.data()) : ROOMS_DEFAULT.map(function(r){ return Object.assign({}, r); });
       state.cfgSource = snap.exists ? 'db' : 'default';
-      if (changed) { state.rooms = next; state.days = {}; state.week.days = []; renderRooms(); refreshAll(true); }
-      renderCfg();
+      applyRooms(); autoDiscover();
     }, function(e){ state.dbError = e || {code:'unavailable'}; renderCfg(); });
+    db.doc('discovered/rooms').onSnapshot(function(snap){
+      if (snap === lastDisc) return; lastDisc = snap;
+      state.disc = snap.exists ? normalizeDisc(snap.data()) : {};
+      applyRooms(); autoDiscover();
+    }, function(){});
   }).catch(function(){ state.db = null; renderCfg(); });
 }
 
@@ -1249,7 +1298,7 @@ function start(){
   $('#chips').addEventListener('click', function(ev){ if (ev.target === ev.currentTarget) pin.focus(); });
   $('#book').addEventListener('click', book);
   $('#cfg-save').addEventListener('click', saveCfg);
-  $('#cfg-scan').addEventListener('click', scanRooms);
+  $('#cfg-scan').addEventListener('click', function(){ scanRooms(false); });
   $('#tab-book').addEventListener('click', function(){ setView('book'); });
   $('#tab-panel').addEventListener('click', function(){ setView('panel'); });
   $('#day-prev').addEventListener('click', function(){ setPanelDay(addDays(state.panelDay, -1)); });

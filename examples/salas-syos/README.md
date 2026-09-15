@@ -37,15 +37,22 @@ Set-MailboxFolderPermission -Identity "Sala Cadeia do Frio:\Calendar" -User Defa
 
 | Sala | Capacidade | Caixa de recurso |
 |---|---|---|
-| Beacon | 4 | `salabeacon@syos.com` (deduzido, a confirmar) |
-| Cadeia do Frio | 6 | `SalaCadeiadoFriofc7570d91781111811124@syos.com` (confirmado) |
+| Beacon | 4 | descoberta |
+| Cadeia do Frio | 6 | confirmada |
 | FicaFrio | 4 | a descobrir |
 | Super Easy | 6 | a descobrir |
 | Syos Easy | 8 | a descobrir |
 
-Os endereços têm sufixo gerado pelo Microsoft 365 e não são adivinháveis. O botão
-**Descobrir e-mails**, na configuração, varre as reuniões do usuário e preenche os
-endereços das salas já convidadas.
+Os endereços das caixas de recurso têm sufixo gerado pelo Microsoft 365
+(`SalaCadeiadoFrio…@syos.com`) e não são adivinháveis, mas ninguém precisa procurá-los.
+Ao abrir a página, ela varre as reuniões do próprio usuário atrás de salas convidadas e
+grava o que encontrar em `discovered/rooms`, um documento que qualquer pessoa da
+organização pode escrever. A partir daí a sala vale para todos os usuários da página.
+A varredura roda no máximo uma vez a cada seis horas por pessoa; o botão
+**Descobrir agora** força a execução.
+
+A configuração em `config/rooms` (só administradores escrevem) tem precedência sobre o
+que foi descoberto, então um endereço errado pode ser corrigido lá.
 
 ## Capacidades declaradas
 
@@ -57,5 +64,7 @@ endereços das salas já convidadas.
 }
 ```
 
-`config/rooms` guarda nome, capacidade e e-mail de cada sala; leitura para todos, escrita
-só para quem pode editar o Artifact.
+- `config/rooms` — nome, capacidade e e-mail de cada sala. Leitura para todos, escrita só
+  para quem pode editar o Artifact.
+- `discovered/rooms` — endereços aprendidos automaticamente. Herda a regra padrão da raiz,
+  então qualquer pessoa da organização que abra a página pode contribuir.
