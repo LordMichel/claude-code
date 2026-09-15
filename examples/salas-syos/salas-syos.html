@@ -124,6 +124,7 @@ section.card{background:var(--surface);border:1px solid var(--line);border-radiu
 .wcell.head{background:transparent;border-color:transparent;color:var(--muted);font-size:12px;padding-bottom:2px}
 .wcell.na{color:var(--muted);font-weight:400}
 .prog{font-size:13px;color:var(--muted)}
+.note-missing{font-size:13px;color:var(--ink);background:var(--warn-soft);border-radius:var(--radius-s);padding:10px 12px;margin:0}
 footer{display:grid;gap:14px;color:var(--muted);font-size:13.5px}
 details{border:1px dashed var(--line-strong);border-radius:var(--radius-s);padding:12px 14px;background:var(--surface)}
 summary{cursor:pointer;font-weight:600;color:var(--ink);font-size:14px}
@@ -165,6 +166,7 @@ code{font-size:.92em;background:var(--surface-2);padding:1px 5px;border-radius:4
       <button class="btn" type="button" id="day-reload">Atualizar</button>
     </div>
     <div class="kpis" id="kpis"></div>
+    <p class="note-missing" id="missing-note" hidden></p>
     <div class="gridbox" id="daygrid"></div>
     <div class="axis"><span></span><div class="axis-in"><span style="grid-column:1/13">7h</span><span style="grid-column:13/25">10h</span><span style="grid-column:25/37">13h</span><span style="grid-column:37/49">16h</span><span style="grid-column:41/51;justify-self:end">19h30</span></div></div>
     <div class="legend"><span><i style="background:var(--free)"></i>livre</span><span><i style="background:var(--busy)"></i>ocupada</span><span><i style="background:var(--tent)"></i>pendente</span><span><i style="background:var(--free);opacity:.45"></i>já passou</span><span><i style="background:var(--nodata)"></i>sem dados</span></div>
@@ -524,7 +526,8 @@ function applyRooms(){
   var next = cfg.map(function(c){
     var disc = state.disc[c.id];
     var email = c.email || (EMAIL_RE.test(String(disc||'')) ? disc : '');
-    return {id: c.id, name: c.name, capacity: c.capacity, email: email, source: c.email ? 'cfg' : (email ? 'disc' : '')};
+    return {id: c.id, name: c.name, capacity: c.capacity, email: email,
+      source: c.email ? 'cfg' : (email ? 'disc' : ''), verified: c.email ? (c.verified !== false) : true};
   });
   var changed = JSON.stringify(next) !== JSON.stringify(state.rooms);
   state.rooms = next;
@@ -535,7 +538,8 @@ function normalizeCfg(data){
   var byId = {}; if (data && Array.isArray(data.rooms)) data.rooms.forEach(function(r){ if (r && typeof r === 'object' && typeof r.id === 'string') byId[r.id] = r; });
   return ROOMS_DEFAULT.map(function(d){ var r = byId[d.id] || {}; var cap = parseInt(r.capacity, 10); var mail = cleanEmail(r.email);
     return {id: d.id, name: typeof r.name === 'string' && r.name.length && r.name.length < 60 ? r.name : d.name,
-      capacity: (cap >= 1 && cap <= CAP_MAX) ? cap : d.capacity, email: (mail.length <= 254 && EMAIL_RE.test(mail)) ? mail : ''}; });
+      capacity: (cap >= 1 && cap <= CAP_MAX) ? cap : d.capacity, email: (mail.length <= 254 && EMAIL_RE.test(mail)) ? mail : '',
+      verified: r.verified !== false}; });
 }
 function normalizeDisc(data){
   var out = {}, src = data && data.rooms;
@@ -623,7 +627,7 @@ function renderNow(){
       detail = (st.openEnd ? 'até o fim do dia' : 'até ' + slotLabel(st.untilK)) + (st.label ? ' · ' + st.label.subject + (st.label.who ? ' (' + st.label.who + ')' : '') : ''); }
     else if (st.kind === 'before') detail = 'antes das 7h';
     else if (st.kind === 'after') detail = 'depois das 19h30';
-    else if (st.kind === 'noemail') detail = 'sala ainda sem agenda conectada';
+    else if (st.kind === 'noemail') detail = 'sem agenda conectada: falta o endereço desta sala no Microsoft 365';
     else if (st.kind === 'loading') { word = '…'; detail = 'consultando'; }
     else if (st.kind === 'unknown') detail = 'agenda inacessível';
     else if (st.kind === 'nomcp') detail = 'sem conector Microsoft 365';
@@ -631,7 +635,8 @@ function renderNow(){
     var d = document.createElement('div'); d.className = 'nowcard ' + cls;
     d.innerHTML = '<div class="r">' + esc(r.name) + '</div><div class="st">' + esc(word) + '</div>'
       + '<div class="d">' + esc(detail) + '</div>'
-      + '<div class="d">' + (r.capacity ? esc(r.capacity + ' lugares') : '') + '</div>';
+      + '<div class="d">' + (r.capacity ? esc(r.capacity + ' lugares') : '')
+      + (r.email && r.verified === false ? ' · <b style="font-weight:600;color:var(--warn)">endereço a confirmar</b>' : '') + '</div>';
     host.appendChild(d);
   });
 }
@@ -658,12 +663,19 @@ function renderPanel(){
     {v: st.peakK === null ? '—' : slotLabel(st.peakK), l: 'Horário de pico', s: st.peakK === null ? 'sem reservas' : st.peakN + ' sala' + (st.peakN>1?'s':'') + ' ocupada' + (st.peakN>1?'s':'')}
   ];
   $('#kpis').innerHTML = kp.map(function(x){ return '<div class="kpi"><div class="v">'+esc(x.v)+'</div><div class="l">'+esc(x.l)+'</div><div class="s">'+esc(x.s)+'</div></div>'; }).join('');
+  var semend = state.rooms.filter(function(r){ return !r.email; });
+  var av = $('#missing-note');
+  if (semend.length && state.mcp) {
+    av.hidden = false;
+    av.innerHTML = '<b style="font-weight:600">' + esc(semend.map(function(r){ return r.name; }).join(', ')) + '</b>: sem agenda porque o Microsoft 365 exige o endereço da caixa de recurso e ele ainda não é conhecido. Não é livre nem ocupada — é desconhecido. Convide a sala para qualquer reunião no Outlook e clique em “Descobrir agora”, no rodapé.';
+  } else av.hidden = true;
 
   var host = $('#daygrid'); host.innerHTML = '';
   state.rooms.forEach(function(r){
     var a = roomDay(ds, r.id);
     var sub = a.status === 'ok' ? (r.capacity ? r.capacity + ' lugares' : 'capacidade na porta')
-      : a.status === 'noemail' ? 'sem agenda' : a.status === 'loading' ? 'consultando…' : a.status === 'unknown' ? 'sem acesso' : a.status === 'error' ? 'erro' : a.status === 'nomcp' ? 'sem conector' : '—';
+      : a.status === 'noemail' ? 'falta o endereço' : a.status === 'loading' ? 'consultando…' : a.status === 'unknown' ? 'sem acesso' : a.status === 'error' ? 'erro' : a.status === 'nomcp' ? 'sem conector' : '—';
+    if (a.status === 'ok' && r.verified === false) sub += ' · a confirmar';
     var row = document.createElement('div'); row.className = 'grow';
     var cells = document.createElement('div'); cells.className = 'gcells';
     for (var i=0;i<SLOTS;i++){
@@ -823,7 +835,9 @@ function saveCfg(){
     var capRaw = String(($('#cap-'+r.id) || {}).value || '').trim(), cap = parseInt(capRaw, 10), mail = cleanEmail(($('#mail-'+r.id) || {}).value || '');
     if (capRaw && !(cap >= 1 && cap <= CAP_MAX)) badCap.push(r.name);
     if (mail && !(mail.length <= 254 && EMAIL_RE.test(mail))) badMail.push(r.name);
-    return {id: r.id, name: r.name, capacity: (cap >= 1 && cap <= CAP_MAX) ? cap : null, email: (mail.length <= 254 && EMAIL_RE.test(mail)) ? mail : ''};
+    var same = mail === String(r.email || '').toLowerCase();
+    return {id: r.id, name: r.name, capacity: (cap >= 1 && cap <= CAP_MAX) ? cap : null,
+      email: (mail.length <= 254 && EMAIL_RE.test(mail)) ? mail : '', verified: same ? (r.verified !== false) : true};
   });
   if (badMail.length) { s.textContent = 'Endereço inválido em: ' + badMail.join(', ') + '.'; return; }
   if (badCap.length) { s.textContent = 'Lugares inválidos (1 a ' + CAP_MAX + ') em: ' + badCap.join(', ') + '.'; return; }
