@@ -41,26 +41,27 @@ retorna `ErrorItemNotFound`.
 
 ## Salas
 
+As cinco salas do escritório de São Paulo, com o endereço da caixa de recurso lido de um
+convite real na agenda do usuário:
+
 | Sala | Lugares | Caixa de recurso |
 |---|---|---|
-| Beacon | 4 | desconhecida |
-| Cadeia do Frio | 6 | `SalaCadeiadoFrio…@syos.com` |
-| FicaFrio | 4 | desconhecida |
-| Super Easy | 6 | `SalaPaulo…@syos.com` |
-| Syos Easy | 8 | `SalaBugs…@syos.com` |
+| Beacon | 4 | `SalaBeacon@syos.com` |
+| Cadeia do Frio | 6 | `SalaCadeiadoFriofc7570d9…@syos.com` |
+| FicaFrio | 4 | `SaladeReunioOperaes86cd8dfa…@syos.com` |
+| Super Easy | 6 | `SalaPaulo3916ca4f…@syos.com` |
+| Syos Easy | 8 | `SalaBugs8bf36d62…@syos.com` |
 
-Cada endereço cadastrado veio de um convite real observado na agenda do usuário. Nenhum
-foi deduzido: um palpite que resolve no Exchange e devolve livre/ocupado ainda assim não
-prova ser a sala certa, e mostrar isso como agenda da sala seria inventar dado.
+Três apelidos vêm de nomes antigos das salas: a Super Easy era Sala Paulo, a Syos Easy era
+Sala Bugs e a FicaFrio era Sala de Reunião Operações. Por isso não há como derivar o
+endereço do nome atual, e nenhum foi deduzido — cada um apareceu como participante de uma
+reunião real.
 
-Os apelidos vêm de nomes antigos das salas, então não correspondem ao nome atual nem podem
-ser adivinhados. Sem o endereço não há consulta a fazer: a sala aparece como **Desconhecida**,
-nunca como livre, e a página explica o porquê acima da linha do tempo.
-
-A página aprende sozinha: ao abrir, varre as reuniões do próprio usuário, identifica a sala
-pelo campo de local do evento e grava o endereço em `discovered/rooms`, que qualquer pessoa
-da organização pode escrever. A varredura roda no máximo uma vez a cada seis horas por
-pessoa; **Descobrir agora** força a execução. A configuração em `config/rooms` (só
+Sem endereço não há consulta a fazer, e a sala aparece como **Desconhecida**, nunca como
+livre. A página aprende sozinha: ao abrir, varre as reuniões do próprio usuário, identifica
+a sala pelo campo de local do evento e grava o endereço em `discovered/rooms`, que qualquer
+pessoa da organização pode escrever. A varredura roda no máximo uma vez a cada seis horas
+por pessoa; **Descobrir agora** força a execução. A configuração em `config/rooms` (só
 administradores) tem precedência.
 
 ## Capacidades declaradas
