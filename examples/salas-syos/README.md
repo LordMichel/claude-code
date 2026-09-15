@@ -9,26 +9,32 @@ Artifact: https://claude.ai/artifact/JKi9B4bk89hhQ85378zAHW
 
 ## Seções
 
-1. **Agora** — um cartão por sala: livre ou ocupada, até que horas, e o nome da reunião
-   com o organizador quando visível.
-2. **Ocupação do dia** — linha do tempo de 7h às 19h30 de 15 em 15 min para as cinco
-   salas, marcador do horário atual, navegação por dia e indicadores (ocupação, horas
-   reservadas, livres agora, horário de pico). Clicar num bloco livre abre o Outlook já
-   com a sala e o horário.
-3. **Reservas do dia** — cada bloco ocupado como uma linha: horário, sala, reunião e
-   organizador.
-4. **Uso por sala** — barras de ocupação do dia.
-5. **Semana** — grade de segunda a sexta, carregada sob demanda.
+1. **Agora** — um cartão por sala com livre ou ocupada, até que horas, quantas horas
+   disponíveis e o próximo horário livre. Filtro por livres/ocupadas e ordenação que
+   coloca primeiro quem tem a maior janela livre e por último quem fica ocupada por mais
+   tempo.
+2. **Ocupação do dia** — linha do tempo das 7h às 20h30, de 15 em 15 min, com marcador do
+   horário atual e navegação por dia. Indicadores em percentual e em horas.
+3. **Disponibilidade por horário** — uma faixa por hora com quantas e quais salas estão
+   livres; salas livres só em parte da faixa aparecem com contorno tracejado e o horário
+   em que ficam ocupadas.
+4. **Mais e menos reservadas** — barras por sala, em percentual e horas.
+5. **Semana** — grade de segunda a sexta em percentual e horas, carregada sob demanda.
 
 ## De onde vêm os dados
 
 | Informação | Origem | Disponível para |
 |---|---|---|
-| Livre/ocupado por sala | `outlook_find_available_time` (Graph findMeetingTimes, granularidade de 15 min) | Todos |
+| Livre/ocupado por sala | `outlook_find_available_time` (Graph findMeetingTimes) | Todos |
 | Assunto e organizador | `outlook_calendar_search` na agenda do próprio usuário | Reuniões em que o usuário participa |
 
 Um bloco ocupado só é nomeado quando a reunião está na agenda de quem abre a página; os
-demais aparecem como reservados, sem nome. Para que todos vejam todos os nomes, o
+demais aparecem como reservados, sem nome. A página não depende disso: a organização dos
+dados é por horário e por sala, não por quem reservou.
+
+A janela do dia tem 54 fatias de 15 min e o limite da API é 50 candidatos por chamada, então
+cada sala-dia é lida em duas chamadas. A grade da semana usa fatias de 30 min, uma chamada
+por sala-dia. Para que todos vejam todos os nomes, o
 administrador libera leitura no calendário de cada sala:
 
 ```powershell

@@ -1,221 +1,210 @@
 <title>Salas SyOS</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=Instrument+Sans:ital,wght@0,400;0,500;0,600&display=swap">
 <style>
 :root{
   color-scheme: light;
-  --bg:#F2F6F7; --surface:#FFFFFF; --surface-2:#E8EFF2; --ink:#0F1E26; --muted:#5A6C75;
-  --line:#D5DFE3; --line-strong:#B4C4CB;
-  --accent:#0B6E78; --accent-ink:#FFFFFF; --accent-soft:#DCEFF1;
-  --ok:#0F6E4D; --ok-soft:#DCF3E8; --free:#4FB489; --busy:#B5392F; --busy-soft:#F9E1DE;
-  --warn:#946207; --warn-soft:#FBEFD2; --tent:#6E4FB3; --tent-soft:#ECE4F8;
-  --nodata:#E3EBEE; --heat:11,110,120;
-  --shadow:0 1px 2px rgba(15,30,38,.06), 0 8px 24px -16px rgba(15,30,38,.25);
-  --radius:14px; --radius-s:9px; --labelw:112px;
-  --font-display:"Bricolage Grotesque","Instrument Sans",system-ui,sans-serif;
-  --font-body:"Instrument Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --bg:#F4F7F8; --surface:#FFFFFF; --surface-2:#EDF2F4; --ink:#0E1C23; --muted:#5D7079; --faint:#8A9BA3;
+  --line:#DCE5E8; --line-strong:#BDCBD1;
+  --accent:#0B6E78; --accent-soft:#DDF0F2;
+  --ok:#0D6B4A; --ok-soft:#DCF2E7; --free:#42AC80;
+  --busy:#A83A31; --busy-soft:#F8E2DF; --busyfill:#C25248;
+  --warn:#8A5B06; --warn-soft:#FBEED2; --tent:#6A4CAE; --tent-soft:#EBE4F7;
+  --nodata:#E4EBEE; --heat:11,110,120;
+  --shadow:0 1px 2px rgba(14,28,35,.05), 0 6px 20px -14px rgba(14,28,35,.22);
+  --radius:16px; --radius-s:10px; --radius-xs:7px; --labelw:116px;
+  --display:"Bricolage Grotesque","Instrument Sans",system-ui,sans-serif;
+  --body:"Instrument Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
     color-scheme: dark;
-    --bg:#0C151A; --surface:#132028; --surface-2:#1B2B34; --ink:#E7EEF1; --muted:#97A9B2;
-    --line:#25363F; --line-strong:#3C505A;
-    --accent:#5FC8D0; --accent-ink:#06272B; --accent-soft:#113A40;
-    --ok:#56C994; --ok-soft:#143B2C; --free:#2F8A63; --busy:#E0705C; --busy-soft:#4B221D;
-    --warn:#E9BB5E; --warn-soft:#433211; --tent:#B7A0EC; --tent-soft:#342B4E;
-    --nodata:#1F313B; --heat:95,200,208;
-    --shadow:0 1px 2px rgba(0,0,0,.35), 0 10px 28px -18px rgba(0,0,0,.6);
+    --bg:#0B1418; --surface:#111E24; --surface-2:#1A2A32; --ink:#E8EFF1; --muted:#95A8B0; --faint:#6F858E;
+    --line:#22343C; --line-strong:#3A4E58;
+    --accent:#5AC6CE; --accent-soft:#10383E;
+    --ok:#4FC48D; --ok-soft:#12362A; --free:#2E8A63;
+    --busy:#E8836F; --busy-soft:#45201C; --busyfill:#B5493C;
+    --warn:#E5B85C; --warn-soft:#3F2F10; --tent:#AE96E6; --tent-soft:#2F2748;
+    --nodata:#1D2E37; --heat:95,200,208;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 24px -16px rgba(0,0,0,.55);
   }
 }
 :root[data-theme="dark"]{
   color-scheme: dark;
-  --bg:#0C151A; --surface:#132028; --surface-2:#1B2B34; --ink:#E7EEF1; --muted:#97A9B2;
-  --line:#25363F; --line-strong:#3C505A;
-  --accent:#5FC8D0; --accent-ink:#06272B; --accent-soft:#113A40;
-  --ok:#56C994; --ok-soft:#143B2C; --free:#2F8A63; --busy:#E0705C; --busy-soft:#4B221D;
-  --warn:#E9BB5E; --warn-soft:#433211; --tent:#B7A0EC; --tent-soft:#342B4E;
-  --nodata:#1F313B; --heat:95,200,208;
-  --shadow:0 1px 2px rgba(0,0,0,.35), 0 10px 28px -18px rgba(0,0,0,.6);
+  --bg:#0B1418; --surface:#111E24; --surface-2:#1A2A32; --ink:#E8EFF1; --muted:#95A8B0; --faint:#6F858E;
+  --line:#22343C; --line-strong:#3A4E58;
+  --accent:#5AC6CE; --accent-soft:#10383E;
+  --ok:#4FC48D; --ok-soft:#12362A; --free:#2E8A63;
+  --busy:#E8836F; --busy-soft:#45201C; --busyfill:#B5493C;
+  --warn:#E5B85C; --warn-soft:#3F2F10; --tent:#AE96E6; --tent-soft:#2F2748;
+  --nodata:#1D2E37; --heat:95,200,208;
+  --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 24px -16px rgba(0,0,0,.55);
 }
 *,*::before,*::after{box-sizing:border-box}
 html,body{background:var(--bg)}
-body{margin:0;color:var(--ink);font:15px/1.5 var(--font-body);-webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums}
-.wrap>*,section.card>*{min-width:0}
-.wrap{max-width:880px;margin:0 auto;padding-inline:20px;padding-block:28px 56px;display:grid;gap:20px}
-h1,h2,h3{margin:0;text-wrap:balance;font-family:var(--font-display)}
-h1{font-size:clamp(30px,5vw,40px);font-weight:700;letter-spacing:-.02em;line-height:1.05;font-variation-settings:"opsz" 96}
-h2{font-size:17px;font-weight:600;letter-spacing:-.005em}
+body{margin:0;color:var(--ink);font:15px/1.5 var(--body);-webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums}
+.wrap>*,section>*{min-width:0}
+.wrap{max-width:900px;margin:0 auto;padding-inline:20px;padding-block:30px 60px;display:grid;gap:18px}
+h1,h2{margin:0;text-wrap:balance;font-family:var(--display)}
+h1{font-size:clamp(28px,4.5vw,38px);font-weight:700;letter-spacing:-.025em;line-height:1.05;font-variation-settings:"opsz" 96}
+h2{font-size:16px;font-weight:600;letter-spacing:-.005em}
 p{margin:0}
-a{color:var(--accent)}
 button{font:inherit;color:inherit}
-:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-a:focus-visible,summary:focus-visible{border-radius:6px}
-.eyebrow{font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600}
-header{display:grid;gap:10px}
-.lede{color:var(--muted);max-width:64ch;font-size:15.5px}
-.conn{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13px;color:var(--muted)}
-.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--line-strong);margin-right:6px;vertical-align:1px}
-.dot.on{background:var(--ok)} .dot.warn{background:var(--warn)} .dot.off{background:var(--busy)}
-section.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;display:grid;gap:14px;box-shadow:var(--shadow)}
-.sec-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
-.hint{font-size:13px;color:var(--muted)}
-/* agora */
-.nowgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
-.nowcard{border:1px solid var(--line);border-left:4px solid var(--line-strong);border-radius:var(--radius-s);padding:12px 13px;display:grid;gap:4px;background:var(--surface)}
-.nowcard.free{border-left-color:var(--free);background:linear-gradient(90deg,var(--ok-soft) 0 3px,transparent 3px)}
-.nowcard.busy{border-left-color:var(--busy)}
-.nowcard.tent{border-left-color:var(--tent)}
-.nowcard .r{font-family:var(--font-display);font-weight:600;font-size:15.5px;line-height:1.2;overflow-wrap:anywhere}
-.nowcard .st{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase}
-.nowcard.free .st{color:var(--ok)} .nowcard.busy .st{color:var(--busy)} .nowcard.tent .st{color:var(--tent)} .nowcard.na .st{color:var(--muted)}
-.nowcard .d{font-size:12.5px;color:var(--muted);line-height:1.35;overflow-wrap:anywhere}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+header{display:grid;gap:8px;margin-bottom:2px}
+.eyebrow{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);font-weight:600}
+.lede{color:var(--muted);max-width:60ch;font-size:15px}
+.status{font-size:12.5px;color:var(--faint);display:flex;align-items:center;gap:6px}
+.status .dot{width:7px;height:7px;border-radius:50%;background:var(--free);flex:0 0 auto}
+.status.warn{color:var(--warn)} .status.warn .dot{background:var(--warn)}
+section{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;display:grid;gap:14px;box-shadow:var(--shadow)}
+.head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.head .sub{font-size:12.5px;color:var(--faint)}
+/* segmented */
+.seg{display:inline-flex;background:var(--surface-2);border-radius:999px;padding:3px;gap:2px}
+.seg button{border:0;background:transparent;border-radius:999px;padding:5px 13px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;white-space:nowrap}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+/* cartões agora */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(178px,1fr));gap:10px}
+.rc{border:1px solid var(--line);border-radius:var(--radius-s);padding:13px 14px;display:grid;gap:7px;background:var(--surface);position:relative;overflow:hidden}
+.rc::before{content:"";position:absolute;inset:0 auto 0 0;width:3px;background:var(--line-strong)}
+.rc.free::before{background:var(--free)} .rc.busy::before{background:var(--busyfill)} .rc.tent::before{background:var(--tent)}
+.rc .top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.rc .nm{font-family:var(--display);font-weight:600;font-size:16px;line-height:1.2;letter-spacing:-.01em;overflow-wrap:anywhere}
+.rc .cap{font-size:11.5px;color:var(--faint);white-space:nowrap}
+.rc .badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;letter-spacing:.02em;padding:3px 9px;border-radius:999px;background:var(--surface-2);color:var(--muted);width:fit-content}
+.rc.free .badge{background:var(--ok-soft);color:var(--ok)}
+.rc.busy .badge{background:var(--busy-soft);color:var(--busy)}
+.rc.tent .badge{background:var(--tent-soft);color:var(--tent)}
+.rc .big{font-family:var(--display);font-size:17px;font-weight:600;line-height:1.15;letter-spacing:-.01em}
+.rc .sub{font-size:12.5px;color:var(--muted);line-height:1.35;overflow-wrap:anywhere}
+.rc .next{font-size:12.5px;color:var(--accent);font-weight:600}
+.empty{font-size:13.5px;color:var(--muted);padding:6px 0}
 /* dia */
-.daynav{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-.daynav .spacer{flex:1 1 auto}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:999px;padding:7px 14px;font-weight:600;font-size:13.5px;border:1px solid transparent;cursor:pointer;text-decoration:none;line-height:1.2;background:var(--surface);color:var(--ink);border-color:var(--line-strong)}
+.nav{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.nav .sp{flex:1 1 auto}
+.btn{border-radius:999px;padding:6px 13px;font-weight:600;font-size:13px;border:1px solid var(--line-strong);cursor:pointer;background:var(--surface);color:var(--ink);line-height:1.3}
 .btn:hover{border-color:var(--accent);color:var(--accent)}
-.btn:disabled{opacity:.5;pointer-events:none}
-.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
-@media (max-width:620px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
-.kpi{border:1px solid var(--line);border-radius:var(--radius-s);padding:12px 13px;display:grid;gap:3px;background:var(--surface)}
-.kpi .v{font-family:var(--font-display);font-size:25px;font-weight:600;line-height:1.05;letter-spacing:-.01em}
-.kpi .l{font-size:12px;color:var(--muted);font-weight:600}
-.kpi .s{font-size:12px;color:var(--muted)}
-.gridbox{display:grid;gap:7px}
+.btn:disabled{opacity:.45;pointer-events:none}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
+@media (max-width:640px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.kpi{border:1px solid var(--line);border-radius:var(--radius-s);padding:11px 12px;display:grid;gap:2px;background:var(--surface)}
+.kpi .v{font-family:var(--display);font-size:23px;font-weight:600;line-height:1.05;letter-spacing:-.015em}
+.kpi .l{font-size:11.5px;color:var(--muted);font-weight:600}
+.kpi .s{font-size:11.5px;color:var(--faint)}
+.grid{display:grid;gap:6px}
 .grow{display:grid;grid-template-columns:var(--labelw) minmax(0,1fr);gap:10px;align-items:center}
-@media (max-width:620px){:root{--labelw:86px}}
-.gname{font-size:13.5px;font-weight:600;line-height:1.22;overflow-wrap:anywhere}
-.gname s{display:block;font-weight:400;font-size:11.5px;color:var(--muted);text-decoration:none;line-height:1.25;margin-top:1px}
-.gcells{display:grid;grid-template-columns:repeat(50,minmax(0,1fr));gap:1px;height:26px}
-.gcells b{display:block;border-radius:2px;background:var(--nodata);min-width:0}
-.gcells b.f{background:var(--free)}
-.gcells b.f.clickable{cursor:pointer}
-.gcells b.f.clickable:hover{outline:2px solid var(--ink);outline-offset:-1px}
-.gcells b.b{background:var(--busy)} .gcells b.t{background:var(--tent)}
-.gcells b.p{opacity:.42}
-.gcells b.p:not(.f):not(.b):not(.t){background:transparent;box-shadow:inset 0 0 0 1px var(--line);opacity:1}
-.gcells b.now{box-shadow:inset 1.5px 0 0 var(--ink)}
+@media (max-width:640px){:root{--labelw:88px}}
+.gname{font-size:13px;font-weight:600;line-height:1.2;overflow-wrap:anywhere}
+.gname s{display:block;font-weight:400;font-size:11px;color:var(--faint);text-decoration:none;margin-top:1px}
+.cells{display:grid;grid-template-columns:repeat(54,minmax(0,1fr));gap:1px;height:24px}
+.cells b{display:block;border-radius:2px;background:var(--nodata);min-width:0}
+.cells b.f{background:var(--free)} .cells b.b{background:var(--busyfill)} .cells b.t{background:var(--tent)}
+.cells b.p{opacity:.38}
+.cells b.p:not(.f):not(.b):not(.t){background:transparent;box-shadow:inset 0 0 0 1px var(--line);opacity:1}
+.cells b.now{box-shadow:inset 1.5px 0 0 var(--ink)}
 .axis{display:grid;grid-template-columns:var(--labelw) minmax(0,1fr);gap:10px}
-.axis-in{display:grid;grid-template-columns:repeat(50,minmax(0,1fr));gap:1px;font-size:10.5px;color:var(--muted);line-height:1}
+.axis-in{display:grid;grid-template-columns:repeat(54,minmax(0,1fr));gap:1px;font-size:10.5px;color:var(--faint);line-height:1}
 .axis-in span{grid-row:1;white-space:nowrap;min-width:0}
-.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:12px;color:var(--muted)}
-.legend i{display:inline-block;width:12px;height:8px;border-radius:2px;margin-right:5px;vertical-align:1px}
-/* reservas */
-.bklist{display:grid;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--radius-s);overflow:hidden}
-.bk{display:grid;grid-template-columns:104px 132px minmax(0,1fr);gap:12px;align-items:baseline;padding:10px 12px;background:var(--surface);font-size:13.5px}
-.bk-time{font-weight:600;white-space:nowrap}
-.bk-room{color:var(--muted);overflow-wrap:anywhere}
-.bk-who{overflow-wrap:anywhere}
-.bk-who s{text-decoration:none;color:var(--muted)}
-.bk.t .bk-time{color:var(--tent)}
-@media (max-width:600px){.bk{grid-template-columns:96px minmax(0,1fr);gap:4px 10px}.bk-who{grid-column:1/-1}}
-.bkempty{padding:14px 12px;background:var(--surface);font-size:13.5px;color:var(--muted)}
-/* barras e semana */
-.bars{display:grid;gap:8px}
-.bar{display:grid;grid-template-columns:minmax(0,170px) minmax(0,1fr) 46px;gap:10px;align-items:center;font-size:13px}
-@media (max-width:600px){.bar{grid-template-columns:minmax(0,1fr) 46px}.bar .t{grid-column:1/-1}}
-.bar .t{height:9px;border-radius:999px;background:var(--surface-2);overflow:hidden}
+.legend{display:flex;flex-wrap:wrap;gap:10px;font-size:11.5px;color:var(--faint)}
+.legend i{display:inline-block;width:11px;height:7px;border-radius:2px;margin-right:4px;vertical-align:1px}
+/* por horário */
+.hours{display:grid;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--radius-s);overflow:hidden}
+.hr{display:grid;grid-template-columns:102px 94px minmax(0,1fr);gap:10px;align-items:center;padding:8px 12px;background:var(--surface);font-size:13px}
+.hr.now{background:var(--accent-soft)}
+.hr .h{font-weight:600;white-space:nowrap}
+.hr .c{font-size:12px;font-weight:600;color:var(--muted);white-space:nowrap}
+.hr.full .c{color:var(--ok)} .hr.none .c{color:var(--busy)}
+.chips{display:flex;flex-wrap:wrap;gap:5px}
+.chip{font-size:11.5px;padding:2px 8px;border-radius:999px;background:var(--ok-soft);color:var(--ok);font-weight:600;white-space:nowrap}
+.chip.part{background:transparent;color:var(--muted);border:1px dashed var(--line-strong);font-weight:400}
+.chip.none{background:transparent;color:var(--faint);font-weight:400}
+@media (max-width:620px){.hr{grid-template-columns:auto minmax(0,1fr);gap:4px 10px}.hr .c{text-align:right}.chips{grid-column:1/-1}}
+/* barras */
+.bars{display:grid;gap:7px}
+.bar{display:grid;grid-template-columns:minmax(0,150px) minmax(0,1fr) 42px;gap:10px;align-items:center;font-size:13px}
+@media (max-width:600px){.bar{grid-template-columns:minmax(0,1fr) 42px}.bar .t{grid-column:1/-1}}
+.bar .t{height:8px;border-radius:999px;background:var(--surface-2);overflow:hidden}
 .bar .t i{display:block;height:100%;background:var(--accent);border-radius:999px}
-.bar .n{text-align:right;color:var(--muted);font-size:12.5px}
-.week{display:grid;gap:6px}
-.wrow{display:grid;grid-template-columns:var(--labelw) repeat(5,minmax(0,1fr));gap:6px;align-items:center}
-.wcell{border-radius:6px;padding:9px 4px;text-align:center;font-size:12px;font-weight:600;border:1px solid var(--line)}
-.wcell.head{background:transparent;border-color:transparent;color:var(--muted);font-size:12px;padding-bottom:2px}
-.wcell.na{color:var(--muted);font-weight:400}
-.prog{font-size:13px;color:var(--muted)}
-.note-missing{font-size:13px;color:var(--ink);background:var(--warn-soft);border-radius:var(--radius-s);padding:10px 12px;margin:0}
-footer{display:grid;gap:14px;color:var(--muted);font-size:13.5px}
-details{border:1px dashed var(--line-strong);border-radius:var(--radius-s);padding:12px 14px;background:var(--surface)}
-summary{cursor:pointer;font-weight:600;color:var(--ink);font-size:14px}
-.cfg{display:grid;gap:10px;margin-top:12px}
-.cfg-row{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.7fr) minmax(0,1.9fr);gap:10px;align-items:center}
-@media (max-width:560px){.cfg-row{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.cfg-row .rn{grid-column:1/-1}}
-.cfg .rn{font-weight:600;color:var(--ink)}
-.cfg-row.small .rn{font-weight:inherit;color:inherit}
-.cfg-foot{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-top:10px}
-input[type=number],input[type=email]{width:100%;min-width:0;font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line-strong);border-radius:var(--radius-s);padding:8px 10px;height:38px}
-input:focus{border-color:var(--accent);outline:2px solid var(--accent);outline-offset:0}
-input[readonly]{background:var(--surface-2);color:var(--muted)}
-.small{font-size:12.5px;color:var(--muted)}
-code{font-size:.92em;background:var(--surface-2);padding:1px 5px;border-radius:4px;word-break:break-all}
-.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+.bar .n{text-align:right;color:var(--muted);font-size:12.5px;font-weight:600;line-height:1.2}
+.bar .n s{display:block;font-weight:400;font-size:10.5px;color:var(--faint);text-decoration:none}
+/* semana */
+.week{display:grid;gap:5px}
+.wrow{display:grid;grid-template-columns:var(--labelw) repeat(5,minmax(0,1fr));gap:5px;align-items:center}
+.wc{border-radius:var(--radius-xs);padding:7px 3px;text-align:center;font-size:12px;font-weight:600;border:1px solid var(--line);line-height:1.25}
+.wc s{display:block;font-weight:400;font-size:10px;color:var(--faint);text-decoration:none}
+.wc.head{background:transparent;border-color:transparent;color:var(--faint);font-size:11.5px;padding-bottom:1px}
+.wc.na{color:var(--faint);font-weight:400}
+.prog{font-size:12.5px;color:var(--faint)}
+.note{font-size:12.5px;color:var(--ink);background:var(--warn-soft);border-radius:var(--radius-s);padding:9px 11px;margin:0}
+footer{font-size:12px;color:var(--faint);text-align:center;padding-top:4px}
 </style>
 
 <div class="wrap">
   <header>
-    <div class="eyebrow">SyOS · escritório de São Paulo</div>
+    <div class="eyebrow">SyOS · São Paulo</div>
     <h1>Salas SyOS</h1>
-    <p class="lede">As cinco salas lado a lado: quem está livre agora, até que horas, e quem reservou. É o que o Teams não mostra numa tela só. Reservar continua sendo no Teams ou no Outlook, adicionando a sala como local.</p>
-    <div class="conn" id="conn" aria-live="polite"><span><span class="dot" id="conn-dot"></span><span id="conn-text">Verificando conexão com o Microsoft 365…</span></span></div>
+    <p class="lede">Quem está livre agora, até quando, e qual o próximo horário de cada sala.</p>
+    <div class="status" id="status"><span class="dot"></span><span id="status-text">Carregando agendas…</span></div>
   </header>
 
-  <section class="card" aria-labelledby="h-agora">
-    <div class="sec-head"><h2 id="h-agora">Agora</h2><span class="hint" id="now-when"></span></div>
-    <div class="nowgrid" id="nowgrid"></div>
+  <section aria-labelledby="h-agora">
+    <div class="head">
+      <h2 id="h-agora">Agora <span class="sub" id="now-time"></span></h2>
+      <div class="seg" role="group" aria-label="Filtrar salas">
+        <button type="button" id="f-all" aria-pressed="true">Todas</button>
+        <button type="button" id="f-free" aria-pressed="false">Livres</button>
+        <button type="button" id="f-busy" aria-pressed="false">Ocupadas</button>
+      </div>
+    </div>
+    <div class="cards" id="cards"></div>
   </section>
 
-  <section class="card" aria-labelledby="h-dia">
-    <div class="sec-head"><h2 id="h-dia">Ocupação do dia</h2><span class="hint" id="panel-when"></span></div>
-    <div class="daynav">
-      <button class="btn" type="button" id="day-prev">◀ Dia anterior</button>
-      <button class="btn" type="button" id="day-today">Hoje</button>
-      <button class="btn" type="button" id="day-next">Próximo dia ▶</button>
-      <span class="spacer"></span>
-      <button class="btn" type="button" id="day-reload">Atualizar</button>
+  <section aria-labelledby="h-dia">
+    <div class="head"><h2 id="h-dia">Ocupação do dia</h2><span class="sub" id="day-when"></span></div>
+    <div class="nav">
+      <button class="btn" type="button" id="prev">◀</button>
+      <button class="btn" type="button" id="today">Hoje</button>
+      <button class="btn" type="button" id="next">▶</button>
+      <span class="sp"></span>
+      <button class="btn" type="button" id="reload">Atualizar</button>
     </div>
     <div class="kpis" id="kpis"></div>
-    <p class="note-missing" id="missing-note" hidden></p>
-    <div class="gridbox" id="daygrid"></div>
-    <div class="axis"><span></span><div class="axis-in"><span style="grid-column:1/13">7h</span><span style="grid-column:13/25">10h</span><span style="grid-column:25/37">13h</span><span style="grid-column:37/49">16h</span><span style="grid-column:41/51;justify-self:end">19h30</span></div></div>
-    <div class="legend"><span><i style="background:var(--free)"></i>livre</span><span><i style="background:var(--busy)"></i>ocupada</span><span><i style="background:var(--tent)"></i>pendente</span><span><i style="background:var(--free);opacity:.45"></i>já passou</span><span><i style="background:var(--nodata)"></i>sem dados</span></div>
+    <p class="note" id="missing" hidden></p>
+    <div class="grid" id="daygrid"></div>
+    <div class="axis"><span></span><div class="axis-in">
+      <span style="grid-column:1/13">7h</span><span style="grid-column:13/25">10h</span><span style="grid-column:25/37">13h</span><span style="grid-column:37/49">16h</span><span style="grid-column:43/55;justify-self:end">20h30</span>
+    </div></div>
+    <div class="legend"><span><i style="background:var(--free)"></i>livre</span><span><i style="background:var(--busyfill)"></i>ocupada</span><span><i style="background:var(--tent)"></i>pendente</span><span><i style="background:var(--free);opacity:.4"></i>já passou</span><span><i style="background:var(--nodata)"></i>sem dados</span></div>
   </section>
 
-  <section class="card" aria-labelledby="h-reservas">
-    <div class="sec-head"><h2 id="h-reservas">Reservas do dia</h2><span class="hint" id="bk-hint"></span></div>
-    <div class="bklist" id="bklist"></div>
+  <section aria-labelledby="h-horas">
+    <div class="head"><h2 id="h-horas">Disponibilidade por horário</h2><span class="sub" id="hours-sub"></span></div>
+    <div class="hours" id="hours"></div>
   </section>
 
-  <section class="card" aria-labelledby="h-uso">
-    <div class="sec-head"><h2 id="h-uso">Uso por sala no dia</h2><span class="hint">Percentual sobre as 12 h 30 da janela 7h–19h30</span></div>
+  <section aria-labelledby="h-uso">
+    <div class="head"><h2 id="h-uso">Mais e menos reservadas</h2><span class="sub">no dia, das 7h às 20h30</span></div>
     <div class="bars" id="bars"></div>
   </section>
 
-  <section class="card" aria-labelledby="h-semana">
-    <div class="sec-head"><h2 id="h-semana">Semana</h2><span class="hint" id="week-range"></span></div>
-    <p class="small">Carregada sob demanda: uma consulta por sala e por dia, de segunda a sexta.</p>
-    <div class="daynav">
-      <button class="btn" type="button" id="week-load">Carregar semana</button>
-      <span class="prog" id="week-prog"></span>
-    </div>
-    <div class="week" id="weekgrid"></div>
+  <section aria-labelledby="h-semana">
+    <div class="head"><h2 id="h-semana">Semana</h2><span class="sub" id="week-range"></span></div>
+    <div class="nav"><button class="btn" type="button" id="week-load">Carregar semana</button><span class="prog" id="week-prog"></span></div>
+    <div class="week" id="week"></div>
   </section>
 
-  <footer>
-    <details id="who-details">
-      <summary>Por que alguns blocos não mostram quem reservou</summary>
-      <p class="small" style="margin-top:10px">O Microsoft 365 entrega a agenda das salas como livre/ocupado para todo mundo, mas o assunto e o organizador só aparecem para quem participa da reunião. Por isso esta página nomeia as reservas em que você está e marca as demais como reservadas, sem nome. Para que todos vejam todos os nomes, o administrador precisa dar permissão de leitura no calendário de cada sala, com <code>Set-MailboxFolderPermission -Identity "Sala X:\Calendar" -User Default -AccessRights Reviewer</code>.</p>
-    </details>
-    <details id="cfg-details">
-      <summary>Salas cadastradas e como a página descobre cada uma</summary>
-      <div class="cfg" id="cfg"></div>
-      <div class="cfg-foot">
-        <span class="small" id="cfg-status"></span>
-        <span style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn" id="cfg-scan" type="button">Descobrir agora</button><button class="btn" id="cfg-save" type="button">Salvar para todos</button></span>
-      </div>
-      <p class="small" style="margin-top:10px">Para ler a agenda de uma sala o Microsoft 365 exige o endereço da caixa de recurso dela. Os apelidos vêm de nomes antigos (<code>SalaPaulo…</code> é a Super Easy), então não dá para adivinhar. Você não precisa procurar: sempre que alguém que usa esta página tiver convidado a sala para uma reunião, a página aprende o endereço e ele passa a valer para todos.</p>
-    </details>
-  </footer>
+  <footer>Dados da agenda de cada sala no Microsoft 365, lidos com a sua conta.</footer>
 </div>
 
 <script>
 (function(){
 'use strict';
 var $ = function(s, r){ return (r||document).querySelector(s); };
-var $$ = function(s, r){ return Array.prototype.slice.call((r||document).querySelectorAll(s)); };
 var SERVER = 'Microsoft 365';
-var DAY_START_MIN = 7*60, DAY_END_MIN = 19*60+30, SLOT = 15, SLOTS = 50;
+var DAY_START = 7*60, DAY_END = 20*60+30, SLOT = 15, SLOTS = 54, CHUNK = 27;
+var WSLOT = 30, WSLOTS = 27;
 var CAP_MAX = 200, REFETCH_MS = 120000;
 var ROOMS_DEFAULT = [
   {id:'beacon', name:'Beacon', capacity:4, email:''},
@@ -224,691 +213,557 @@ var ROOMS_DEFAULT = [
   {id:'super-easy', name:'Super Easy', capacity:6, email:''},
   {id:'syos-easy', name:'Syos Easy', capacity:8, email:''}
 ];
-var KNOWN_CODES = ['needs_reauth','server_not_connected','selection_required','server_not_found','server_unavailable','not_in_manifest','blocked_by_policy','approval_required','tool_error','bad_request','cancelled','rate_limited','upstream_error','not_granted','capability_disabled','capability_removed','transform_error','consent_required','user_changed'];
-var AUTH_CODES = ['needs_reauth','server_not_connected','selection_required','not_in_manifest','not_granted','capability_disabled','consent_required'];
+var KNOWN = ['needs_reauth','server_not_connected','selection_required','server_not_found','server_unavailable','not_in_manifest','blocked_by_policy','approval_required','tool_error','bad_request','cancelled','rate_limited','upstream_error','not_granted','capability_disabled','capability_removed','transform_error','consent_required','user_changed'];
+var AUTH = ['needs_reauth','server_not_connected','selection_required','not_in_manifest','not_granted','capability_disabled','consent_required'];
 var TZ = 'America/Sao_Paulo';
 try { TZ = Intl.DateTimeFormat().resolvedOptions().timeZone || TZ; } catch(e){}
 var EMAIL_RE = /^[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$/;
 
 var state = {
   rooms: ROOMS_DEFAULT.map(function(r){ return Object.assign({}, r); }),
-  days: {}, events: {}, panelDay: null,
+  days: {}, wk: {}, events: {}, day: null, filter: 'all',
   week: {days: [], loading: false, done: 0, total: 0},
-  mcp: undefined, db: undefined, connector: 'checking',
-  cfg: null, disc: {}, discoverTried: false,
-  cfgSource: 'default', cfgSaving: false, cfgBuilt: false, dbError: null, scanning: false
+  mcp: undefined, db: undefined, cfg: null, disc: {}, discoverTried: false, warn: '', lastAt: 0
 };
 
 function lsGet(k, d){ try { var v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch(e){ return d; } }
 function lsSet(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} }
+function esc(s){ return String(s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
 
-/* ---------- datas ---------- */
+/* datas */
 function pad(n){ return String(n).padStart(2,'0'); }
 function dateStr(d){ return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
 function timeStr(d){ return pad(d.getHours())+':'+pad(d.getMinutes()); }
 function todayStr(){ return dateStr(new Date()); }
 function utcIso(d){ return d.toISOString().replace(/\.\d{3}Z$/,'Z'); }
-function wall(d){ return dateStr(d)+'T'+timeStr(d)+':00'; }
-function fromDateStr(ds){ var p = String(ds).split('-').map(Number); return new Date(p[0], p[1]-1, p[2], 0, 0, 0, 0); }
+function fromDateStr(ds){ var p = String(ds).split('-').map(Number); return new Date(p[0], p[1]-1, p[2], 0,0,0,0); }
 function addDays(ds, n){ var d = fromDateStr(ds); d.setDate(d.getDate()+n); return dateStr(d); }
 function fmtDate(d){ try { return d.toLocaleDateString('pt-BR', {weekday:'long', day:'2-digit', month:'long'}); } catch(e){ return dateStr(d); } }
-function fmtShort(d){ try { return d.toLocaleDateString('pt-BR', {weekday:'short', day:'2-digit', month:'2-digit'}); } catch(e){ return dateStr(d); } }
-function fmtHours(mins){ var h = Math.floor(mins/60), m = mins%60; return h ? (h+' h'+(m ? ' '+pad(m) : '')) : (m+' min'); }
-function tzLabel(){
-  try { var p = new Intl.DateTimeFormat('pt-BR', {timeZone: TZ, timeZoneName: 'short'}).formatToParts(new Date()).filter(function(x){ return x.type === 'timeZoneName'; })[0]; if (p) return p.value; } catch(e){}
-  return TZ.replace('_',' ');
-}
-function dayWindow(ds){
+function fmtShort(d){ try { return d.toLocaleDateString('pt-BR', {weekday:'short', day:'2-digit', month:'2-digit'}).replace(/\.$/,''); } catch(e){ return dateStr(d); } }
+function fmtDur(mins){ if (mins < 60) return mins + ' min'; var h = Math.floor(mins/60), m = mins%60; return h + ' h' + (m ? ' ' + pad(m) : ''); }
+function fmtShortDur(mins){ if (!mins) return '0h'; if (mins < 60) return mins + 'min'; var h = Math.floor(mins/60), m = mins%60; return h + 'h' + (m ? pad(m) : ''); }
+function winOf(ds){
   var p = String(ds).split('-').map(Number);
-  return {
-    start: new Date(p[0], p[1]-1, p[2], Math.floor(DAY_START_MIN/60), DAY_START_MIN%60, 0, 0),
-    end: new Date(p[0], p[1]-1, p[2], Math.floor(DAY_END_MIN/60), DAY_END_MIN%60, 0, 0)
-  };
+  return {start: new Date(p[0],p[1]-1,p[2],Math.floor(DAY_START/60),DAY_START%60,0,0),
+          end: new Date(p[0],p[1]-1,p[2],Math.floor(DAY_END/60),DAY_END%60,0,0)};
 }
-function baseK(ds){ return Math.round(dayWindow(ds).start.getTime()/60000); }
+function baseK(ds){ return Math.round(winOf(ds).start.getTime()/60000); }
+function lastK(ds){ return baseK(ds) + SLOTS*SLOT; }
 function nowK(){ return Math.floor(Date.now()/60000/SLOT)*SLOT; }
-function slotLabel(k){ return timeStr(new Date(k*60000)); }
+function lbl(k){ return timeStr(new Date(k*60000)); }
 
-/* ---------- conector ---------- */
-var queue = [], running = 0, MAX_CONC = 2;
-function enqueue(fn){ return new Promise(function(res, rej){ queue.push({fn:fn,res:res,rej:rej}); pump(); }); }
+/* conector */
+var queue = [], running = 0, MAX = 2;
+function enq(fn){ return new Promise(function(res, rej){ queue.push({fn:fn,res:res,rej:rej}); pump(); }); }
 function pump(){
-  while (running < MAX_CONC && queue.length){
-    var job = queue.shift(); running++;
-    Promise.resolve().then(job.fn).then(function(v){ running--; job.res(v); pump(); }, function(e){ running--; job.rej(e); pump(); });
+  while (running < MAX && queue.length){
+    var j = queue.shift(); running++;
+    Promise.resolve().then(j.fn).then(function(v){ running--; j.res(v); pump(); }, function(e){ running--; j.rej(e); pump(); });
   }
 }
 function sleep(ms){ return new Promise(function(r){ setTimeout(r, ms); }); }
-function isThrottled(e){ return !!(e && e.code === 'tool_error' && /RATE_LIMITED|429|throttl|MailboxConcurrency/i.test(e.message || '')); }
-function callRead(tool, input, fresh){
-  var opts = {cache: fresh ? {staleTime: 60000, gcTime: 600000, refresh: true} : {staleTime: 60000, gcTime: 600000}};
+function throttled(e){ return !!(e && e.code === 'tool_error' && /RATE_LIMITED|429|throttl|MailboxConcurrency/i.test(e.message || '')); }
+function call(tool, input, fresh){
+  var opts = {cache: fresh ? {staleTime:60000, gcTime:600000, refresh:true} : {staleTime:60000, gcTime:600000}};
   return state.mcp.callTool(SERVER, tool, input, opts).catch(function(e){
-    if (e && (e.retryable || isThrottled(e))) {
-      var wait = Math.min(e.retryAfterMs || 5000, 60000) + Math.random()*800;
-      return sleep(wait).then(function(){ return state.mcp.callTool(SERVER, tool, input, opts); });
+    if (e && (e.retryable || throttled(e))) {
+      return sleep(Math.min(e.retryAfterMs || 5000, 60000) + Math.random()*800)
+        .then(function(){ return state.mcp.callTool(SERVER, tool, input, opts); });
     }
     throw e;
   });
 }
-function payloadOf(res){
+function payload(res){
   if (!res) return null;
   var p = res.payload;
   if (p && typeof p === 'object') return p;
   if (typeof p === 'string') { try { return JSON.parse(p); } catch(e){ return null; } }
   return null;
 }
-function listOf(payload, keys){
-  if (Array.isArray(payload)) return payload;
-  if (!payload || typeof payload !== 'object') return [];
-  for (var i=0;i<keys.length;i++) if (Array.isArray(payload[keys[i]])) return payload[keys[i]];
+function arrOf(p, keys){
+  if (Array.isArray(p)) return p;
+  if (!p || typeof p !== 'object') return [];
+  for (var i=0;i<keys.length;i++) if (Array.isArray(p[keys[i]])) return p[keys[i]];
   return [];
 }
-function parseSlotTime(slot){
-  if (!slot || !slot.dateTime) return NaN;
-  var dt = String(slot.dateTime).replace(/(\.\d+)?$/, '');
-  if (!slot.timeZone || /^utc$/i.test(slot.timeZone)) return Date.parse(dt + 'Z');
+function slotMs(s){
+  if (!s || !s.dateTime) return NaN;
+  var dt = String(s.dateTime).replace(/(\.\d+)?$/, '');
+  if (!s.timeZone || /^utc$/i.test(s.timeZone)) return Date.parse(dt + 'Z');
   var m = dt.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/); if (!m) return NaN;
   return new Date(+m[1], +m[2]-1, +m[3], +m[4], +m[5], 0, 0).getTime();
 }
-function normCode(e){ var c = e && e.code; return (c && KNOWN_CODES.indexOf(c) >= 0) ? c : 'upstream_error'; }
+function code(e){ var c = e && e.code; return (c && KNOWN.indexOf(c) >= 0) ? c : 'upstream_error'; }
 function errText(e){
-  if (e && e.code === 'bad_data') return String(e.message || 'Resposta inesperada.');
-  switch (normCode(e)) {
-    case 'needs_reauth': return 'A sessão do Microsoft 365 expirou. Reconecte em claude.ai → Configurações → Conectores.';
-    case 'server_not_connected': case 'selection_required': case 'server_not_found': return 'Conector Microsoft 365 não disponível. Adicione-o em claude.ai → Configurações → Conectores.';
-    case 'not_in_manifest': case 'not_granted': case 'consent_required': return 'Você não autorizou esta página a usar o Microsoft 365. Recarregue e permita quando for solicitado.';
+  switch (code(e)) {
+    case 'needs_reauth': return 'Sessão do Microsoft 365 expirada. Reconecte em claude.ai → Configurações → Conectores.';
+    case 'server_not_connected': case 'selection_required': case 'server_not_found': return 'Conecte o Microsoft 365 em claude.ai → Configurações → Conectores para ver as agendas.';
+    case 'not_in_manifest': case 'not_granted': case 'consent_required': return 'Permita o acesso ao Microsoft 365 para esta página e recarregue.';
     case 'capability_disabled': case 'capability_removed': return 'O conector não está disponível nesta visualização.';
-    case 'blocked_by_policy': return 'A política da organização bloqueia esta leitura pelo conector.';
-    case 'approval_required': return 'Esta leitura exige uma aprovação que ainda não é possível nesta página.';
-    case 'server_unavailable': case 'rate_limited': return 'O Microsoft 365 está indisponível ou limitando chamadas. Tente de novo em instantes.';
-    case 'tool_error': return toolErrText(e);
-    default: return 'Falha na comunicação com o Microsoft 365' + (e && e.message ? ': ' + String(e.message).slice(0, 140) : '.');
+    case 'blocked_by_policy': return 'A política da organização bloqueia esta leitura.';
+    case 'server_unavailable': case 'rate_limited': return 'Microsoft 365 indisponível no momento. Tentando de novo em instantes.';
+    case 'tool_error': return /Missing scope/i.test(String(e.message||'')) ? 'Falta uma permissão no conector do Microsoft 365.' : 'O Microsoft 365 recusou a leitura.';
+    default: return 'Falha ao falar com o Microsoft 365.';
   }
 }
-function toolErrText(e){
-  var m = String(e && e.message || '');
-  if (/Missing scope/i.test(m)) return 'Permissão ausente no conector: ' + (m.match(/Missing scope '([^']+)'/) || [,'?'])[1] + '.';
-  if (/ErrorInvalidUser|is invalid/i.test(m)) return 'O endereço da sala não existe no Microsoft 365.';
-  if (isThrottled(e)) return 'O Microsoft 365 limitou as chamadas. Tente novamente em alguns segundos.';
-  return 'O Microsoft 365 recusou a leitura: ' + m.replace(/\n[\s\S]*$/, '').slice(0, 160);
-}
-function noteAuthError(e){
-  var code = e && e.code || '';
-  if (AUTH_CODES.indexOf(code) < 0) return;
-  state.connector = code === 'needs_reauth' ? 'needs_reauth' : (code === 'not_in_manifest' || code === 'consent_required') ? 'not_allowed' : 'not_connected';
-  setConn('warn', errText(e));
-}
+function noteErr(e){ if (AUTH.indexOf(e && e.code) >= 0 || code(e) === 'tool_error') state.warn = errText(e); }
 
-/* ---------- disponibilidade ---------- */
+/* agendas */
 function dayOf(ds){ if (!state.days[ds]) state.days[ds] = {}; return state.days[ds]; }
-function roomDay(ds, roomId){ return dayOf(ds)[roomId] || {status:'none'}; }
-function needsFetch(ds, room, force){
-  if (!room.email) return false;
-  var a = dayOf(ds)[room.id];
-  if (force || !a) return true;
-  if (a.status === 'loading') return false;
-  if (a.status === 'error') return true;
-  return !a.at || (Date.now() - a.at) > REFETCH_MS;
-}
-function ensureDay(ds, force, fresh, onEach){
-  if (state.mcp) ensureEvents(ds, force).then(function(){ if (onEach) onEach(); });
-  if (!state.mcp) {
-    state.rooms.forEach(function(r){ dayOf(ds)[r.id] = {status: state.mcp === null ? 'nomcp' : 'waiting'}; });
-    return Promise.resolve();
-  }
+function rd(ds, id){ return dayOf(ds)[id] || {status:'none'}; }
+function stale(a){ return !a || !a.at || (Date.now() - a.at) > REFETCH_MS; }
+function ensureDay(ds, force, fresh, each){
+  if (state.mcp) ensureEvents(ds, force).then(function(){ if (each) each(); });
+  if (!state.mcp) { state.rooms.forEach(function(r){ dayOf(ds)[r.id] = {status: state.mcp === null ? 'nomcp' : 'wait'}; }); return Promise.resolve(); }
   return Promise.all(state.rooms.map(function(room){
     if (!room.email) { dayOf(ds)[room.id] = {status:'noemail'}; return Promise.resolve(); }
-    if (!needsFetch(ds, room, force)) return Promise.resolve();
-    var prev = dayOf(ds)[room.id];
-    dayOf(ds)[room.id] = (prev && prev.status === 'ok') ? Object.assign({}, prev, {refreshing:true}) : {status:'loading'};
-    return enqueue(function(){ return fetchRoomDay(room, ds, fresh); }).then(function(a){
-      dayOf(ds)[room.id] = a; if (onEach) onEach();
+    var a = dayOf(ds)[room.id];
+    if (!force && a && a.status === 'ok' && !stale(a)) return Promise.resolve();
+    if (a && a.status === 'loading') return Promise.resolve();
+    dayOf(ds)[room.id] = (a && a.status === 'ok') ? Object.assign({}, a, {refreshing:true}) : {status:'loading'};
+    return enq(function(){ return fetchDay(room, ds, fresh); }).then(function(x){
+      dayOf(ds)[room.id] = x; state.lastAt = Date.now(); if (each) each();
     }, function(e){
-      dayOf(ds)[room.id] = {status:'error', err: e || {}, at: Date.now()}; noteAuthError(e); if (onEach) onEach();
+      dayOf(ds)[room.id] = {status:'error', err: e||{}, at: Date.now()}; noteErr(e); if (each) each();
     });
   }));
 }
-function fetchRoomDay(room, ds, fresh){
-  var win = dayWindow(ds);
-  var input = {participants:[room.email], afterDateTime: utcIso(win.start), beforeDateTime: utcIso(win.end), durationMinutes: SLOT, maxCandidates: SLOTS, isOrganizerOptional: true};
-  return callRead('outlook_find_available_time', input, fresh).then(function(res){
-    var p = payloadOf(res) || {};
-    var times = listOf(p, ['availableTimes','meetingTimeSuggestions']);
-    var slots = {}, count = 0, unknown = 0, outside = 0;
-    var ws = Math.round(win.start.getTime()/60000), we = Math.round(win.end.getTime()/60000);
+function fetchChunk(room, fromK, count, gran, fresh){
+  var a = new Date(fromK*60000), b = new Date((fromK + count*gran)*60000);
+  return call('outlook_find_available_time', {participants:[room.email], afterDateTime: utcIso(a), beforeDateTime: utcIso(b),
+    durationMinutes: gran, maxCandidates: Math.min(count, 50), isOrganizerOptional: true}, fresh)
+  .then(function(res){
+    var p = payload(res) || {}, out = {slots:{}, count:0, unknown:0, reason: String(p.emptySuggestionsReason||'')};
     var mail = String(room.email).toLowerCase();
-    times.forEach(function(t){
-      var ms = parseSlotTime(t && (t.start || (t.meetingTimeSlot && t.meetingTimeSlot.start))); if (isNaN(ms)) return;
+    arrOf(p, ['availableTimes','meetingTimeSuggestions']).forEach(function(t){
+      var ms = slotMs(t && (t.start || (t.meetingTimeSlot && t.meetingTimeSlot.start))); if (isNaN(ms)) return;
       var k = Math.round(ms/60000);
-      if (k < ws - 1 || k >= we + 1) { outside++; return; }
+      if (k < fromK - 1 || k >= fromK + count*gran + 1) return;
       var list = Array.isArray(t.attendeeAvailability) ? t.attendeeAvailability : [];
-      var hit = list.filter(function(a){ return a && String(a.email || '').toLowerCase() === mail; })[0] || list[0] || {};
+      var hit = list.filter(function(x){ return x && String(x.email||'').toLowerCase() === mail; })[0] || list[0] || {};
       var av = String(hit.availability || 'free').toLowerCase();
-      if (av === 'unknown') unknown++;
-      slots[k] = av; count++;
+      if (av === 'unknown') out.unknown++;
+      out.slots[k] = av; out.count++;
     });
-    var at = Date.now();
-    var storedAt = (res && res.cache && res.cache.storedAt) ? res.cache.storedAt : at;
-    if (count && unknown === count) return {status:'unknown', at: at, storedAt: storedAt};
-    if (outside && !count) return {status:'error', err:{code:'bad_data', message:'Horários fora da janela consultada.'}, at: at};
-    if (count) return {status:'ok', slots: slots, at: at, storedAt: storedAt};
-    var probe = Object.assign({}, input, {isOrganizerOptional: false, maxCandidates: 5});
-    return callRead('outlook_find_available_time', probe, fresh).then(function(r2){
-      var p2 = payloadOf(r2) || {}, reason = String(p2.emptySuggestionsReason || '');
-      if (/OrUnknown/i.test(reason)) return {status:'unknown', at: at, storedAt: storedAt};
-      if (/^AttendeesUnavailable$/i.test(reason)) return {status:'ok', slots: {}, allBusy: true, at: at, storedAt: storedAt};
-      return {status:'empty', at: at, storedAt: storedAt};
-    }, function(){ return {status:'empty', at: at, storedAt: storedAt}; });
+    out.storedAt = (res && res.cache && res.cache.storedAt) ? res.cache.storedAt : Date.now();
+    return out;
   });
 }
-function cellState(ds, roomId, k){
-  var a = roomDay(ds, roomId);
-  if (a.status !== 'ok') return a.status === 'loading' ? 'loading' : 'nodata';
+function fetchDay(room, ds, fresh){
+  var b = baseK(ds);
+  return fetchChunk(room, b, CHUNK, SLOT, fresh).then(function(p1){
+    return fetchChunk(room, b + CHUNK*SLOT, CHUNK, SLOT, fresh).then(function(p2){
+      var slots = Object.assign({}, p1.slots, p2.slots);
+      var count = p1.count + p2.count, unknown = p1.unknown + p2.unknown;
+      var at = Date.now(), storedAt = Math.min(p1.storedAt, p2.storedAt);
+      if (count && unknown === count) return {status:'unknown', at: at};
+      if (count) return {status:'ok', slots: slots, at: at, storedAt: storedAt};
+      var r = (p1.reason || '') + ' ' + (p2.reason || '');
+      if (/OrUnknown/i.test(r)) return {status:'unknown', at: at};
+      return {status:'ok', slots: {}, allBusy: true, at: at, storedAt: storedAt};
+    });
+  });
+}
+function cell(ds, id, k){
+  var a = rd(ds, id);
+  if (a.status !== 'ok') return a.status === 'loading' ? 'load' : 'none';
   if (a.allBusy) return 'busy';
   var v = a.slots[k];
   if (!v) return 'busy';
   if (v === 'tentative') return 'tent';
   if (v === 'busy' || v === 'oof') return 'busy';
-  if (v === 'unknown') return 'nodata';
+  if (v === 'unknown') return 'none';
   return 'free';
 }
-function intervals(ds, roomId){
-  var a = roomDay(ds, roomId); if (a.status !== 'ok') return [];
-  var base = baseK(ds), out = [], cur = null;
-  for (var i=0;i<=SLOTS;i++){
-    var k = base + i*SLOT;
-    var c = i < SLOTS ? cellState(ds, roomId, k) : 'end';
-    var busy = (c === 'busy' || c === 'tent');
-    if (busy && cur && cur.kind === c) { cur.endK = k + SLOT; continue; }
-    if (cur) { out.push(cur); cur = null; }
-    if (busy) cur = {startK: k, endK: k + SLOT, kind: c};
-  }
-  if (cur) out.push(cur);
-  return out;
-}
-function dayStats(ds){
-  var perRoom = [], totalBusy = 0, totalKnown = 0, byK = {};
-  state.rooms.forEach(function(r){
-    var a = roomDay(ds, r.id), busy = 0, known = 0;
-    if (a.status === 'ok') for (var i=0;i<SLOTS;i++){
-      var k = baseK(ds) + i*SLOT, c = cellState(ds, r.id, k);
-      if (c === 'busy' || c === 'tent') { busy++; byK[k] = (byK[k]||0)+1; }
-      if (c === 'busy' || c === 'tent' || c === 'free') known++;
-    }
-    totalBusy += busy; totalKnown += known;
-    perRoom.push({room: r, busy: busy, known: known, pct: known ? Math.round(busy/known*100) : null, status: a.status});
-  });
-  var peakK = null, peakN = 0;
-  Object.keys(byK).forEach(function(k){ if (byK[k] > peakN) { peakN = byK[k]; peakK = +k; } });
-  return {perRoom: perRoom, busy: totalBusy, known: totalKnown, pct: totalKnown ? Math.round(totalBusy/totalKnown*100) : null, peakK: peakK, peakN: peakN};
-}
-function nextFree(ds, roomId){
-  var a = roomDay(ds, roomId); if (a.status !== 'ok') return null;
-  var from = (ds === todayStr()) ? Math.max(baseK(ds), nowK()) : baseK(ds);
-  for (var k = from; k < baseK(ds) + SLOTS*SLOT; k += SLOT) if (cellState(ds, roomId, k) === 'free') return k;
-  return null;
-}
 
-/* ---------- reuniões do próprio usuário ---------- */
-function normName(s){ return String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,''); }
-function cleanEmail(raw){ return String(raw || '').trim().replace(/^[<"'(\[]+|[>"')\];,]+$/g, '').toLowerCase(); }
-function prettyPerson(addr){
-  var local = String(addr||'').split('@')[0];
-  if (!local) return '';
-  return local.split(/[._\-]+/).filter(Boolean).map(function(w){ return w.charAt(0).toUpperCase() + w.slice(1); }).join(' ');
+/* reuniões do usuário, para nomear blocos quando visível */
+function norm(s){ return String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]/g,''); }
+function clean(x){ return String(x||'').trim().replace(/^[<"'(\[]+|[>"')\];,]+$/g,'').toLowerCase(); }
+function person(a){
+  var l = String(a||'').split('@')[0]; if (!l) return '';
+  return l.split(/[._\-]+/).filter(Boolean).map(function(w){ return w.charAt(0).toUpperCase()+w.slice(1); }).join(' ');
 }
-function attendeeList(ev){
-  return (Array.isArray(ev.attendees) ? ev.attendees : []).map(function(a){
-    return cleanEmail(typeof a === 'string' ? a : (a && (a.address || a.email || (a.emailAddress && a.emailAddress.address)) || ''));
+function evRooms(ev){
+  var atts = (Array.isArray(ev.attendees)?ev.attendees:[]).map(function(a){
+    return clean(typeof a === 'string' ? a : (a && (a.address||a.email||(a.emailAddress&&a.emailAddress.address))||''));
   }).filter(Boolean);
-}
-function locText(ev){ return normName(ev.location && ev.location.displayName ? ev.location.displayName : ev.location); }
-function eventRooms(ev){
-  var atts = attendeeList(ev), loc = locText(ev), out = [];
-  var roomish = atts.filter(function(a){ return /^sala/i.test(a.split('@')[0]); });
-  var byLoc = state.rooms.filter(function(r){
-    var nm = normName(r.name); return !!loc && nm.length >= 4 && (loc.indexOf('sala' + nm) >= 0 || loc.indexOf(nm) >= 0);
-  });
-  state.rooms.forEach(function(r){
-    if (r.email && atts.indexOf(cleanEmail(r.email)) >= 0) out.push({id: r.id, email: cleanEmail(r.email)});
-  });
+  var loc = norm(ev.location && ev.location.displayName ? ev.location.displayName : ev.location);
+  var out = [], roomish = atts.filter(function(a){ return /^sala/i.test(a.split('@')[0]); });
+  var byLoc = state.rooms.filter(function(r){ var n = norm(r.name); return !!loc && n.length >= 4 && loc.indexOf(n) >= 0; });
+  state.rooms.forEach(function(r){ if (r.email && atts.indexOf(clean(r.email)) >= 0) out.push({id:r.id, email:clean(r.email)}); });
   if (!out.length && roomish.length === 1 && byLoc.length === 1) out.push({id: byLoc[0].id, email: roomish[0]});
   if (!out.length && !roomish.length && byLoc.length === 1) out.push({id: byLoc[0].id, email: ''});
-  if (!out.length) roomish.forEach(function(addr){
-    var local = addr.split('@')[0];
-    state.rooms.forEach(function(r){ if (local.indexOf('sala' + normName(r.name)) === 0) out.push({id: r.id, email: addr}); });
-  });
   return out;
 }
 function ensureEvents(ds, force){
   var cur = state.events[ds];
-  if (!state.mcp) { state.events[ds] = {status:'nomcp', list: []}; return Promise.resolve(); }
-  if (!force && cur && cur.status !== 'error' && cur.at && (Date.now() - cur.at) < REFETCH_MS) return Promise.resolve();
+  if (!state.mcp) { state.events[ds] = {status:'nomcp', list:[]}; return Promise.resolve(); }
+  if (!force && cur && cur.status === 'ok' && !stale(cur)) return Promise.resolve();
   if (cur && cur.status === 'loading') return Promise.resolve();
-  state.events[ds] = {status:'loading', list: (cur && cur.list) || []};
-  var win = dayWindow(ds);
-  var input = {query:'*', afterDateTime: utcIso(new Date(win.start.getTime() - 3*3600000)), beforeDateTime: utcIso(new Date(win.end.getTime() + 3*3600000)), limit: 25, offset: 0};
-  return enqueue(function(){ return callRead('outlook_calendar_search', input, force); }).then(function(res){
-    var p = payloadOf(res);
-    var raw = Array.isArray(p) ? p : listOf(p, ['events','items','results','value']);
+  state.events[ds] = {status:'loading', list:(cur&&cur.list)||[]};
+  var w = winOf(ds);
+  return enq(function(){ return call('outlook_calendar_search', {query:'*',
+    afterDateTime: utcIso(new Date(w.start.getTime()-3*3600000)), beforeDateTime: utcIso(new Date(w.end.getTime()+3*3600000)),
+    limit:25, offset:0}, force); })
+  .then(function(res){
+    var p = payload(res), raw = Array.isArray(p) ? p : arrOf(p, ['events','items','results','value']);
     var list = [], found = {};
     raw.forEach(function(ev){
       if (!ev || typeof ev !== 'object' || !ev.start || ev.isCancelled) return;
-      var s0 = parseSlotTime(ev.start), e0 = parseSlotTime(ev.end);
-      if (isNaN(s0) || isNaN(e0)) return;
-      var rooms = eventRooms(ev);
-      if (!rooms.length) return;
-      rooms.forEach(function(x){ if (x.email && EMAIL_RE.test(x.email)) found[x.id] = x.email; });
-      list.push({startK: Math.round(s0/60000), endK: Math.round(e0/60000), rooms: rooms.map(function(x){ return x.id; }),
-        subject: String(ev.subject || '').slice(0, 120),
-        who: prettyPerson(ev.organizer && (ev.organizer.address || ev.organizer.email) || ev.organizer)});
+      var s = slotMs(ev.start), e = slotMs(ev.end); if (isNaN(s) || isNaN(e)) return;
+      var rs = evRooms(ev); if (!rs.length) return;
+      rs.forEach(function(x){ if (x.email && EMAIL_RE.test(x.email)) found[x.id] = x.email; });
+      list.push({s: Math.round(s/60000), e: Math.round(e/60000), rooms: rs.map(function(x){ return x.id; }),
+        subject: String(ev.subject||'').slice(0,120), who: person(ev.organizer && (ev.organizer.address||ev.organizer.email) || ev.organizer)});
     });
-    state.events[ds] = {status:'ok', list: list, at: Date.now()};
-    shareDiscovered(found);
-  }, function(e){
-    state.events[ds] = {status:'error', err: e || {}, list: [], at: Date.now()}; noteAuthError(e);
-  });
+    state.events[ds] = {status:'ok', list:list, at: Date.now()};
+    share(found);
+  }, function(e){ state.events[ds] = {status:'error', list:[], at: Date.now()}; noteErr(e); });
 }
-function labelAt(ds, roomId, startK, endK){
-  var ev = (state.events[ds] || {}).list || [];
-  for (var i=0;i<ev.length;i++){
-    var x = ev[i];
-    if (x.rooms.indexOf(roomId) < 0) continue;
-    if (x.startK < endK && x.endK > startK) return x;
-  }
+function labelAt(ds, id, a, b){
+  var l = (state.events[ds]||{}).list || [];
+  for (var i=0;i<l.length;i++){ var x = l[i]; if (x.rooms.indexOf(id) >= 0 && x.s < b && x.e > a) return x; }
   return null;
 }
 
-/* ---------- salas: config + descobertas ---------- */
-function roomById(id){ for (var i=0;i<state.rooms.length;i++) if (state.rooms[i].id===id) return state.rooms[i]; return null; }
+/* salas */
+function byId(id){ for (var i=0;i<state.rooms.length;i++) if (state.rooms[i].id === id) return state.rooms[i]; return null; }
 function applyRooms(){
   var cfg = state.cfg || ROOMS_DEFAULT.map(function(r){ return Object.assign({}, r); });
   var next = cfg.map(function(c){
-    var disc = state.disc[c.id];
-    var email = c.email || (EMAIL_RE.test(String(disc||'')) ? disc : '');
-    return {id: c.id, name: c.name, capacity: c.capacity, email: email, source: c.email ? 'cfg' : (email ? 'disc' : '')};
+    var d = state.disc[c.id];
+    return {id:c.id, name:c.name, capacity:c.capacity, email: c.email || (EMAIL_RE.test(String(d||'')) ? d : '')};
   });
-  var changed = JSON.stringify(next) !== JSON.stringify(state.rooms);
-  state.rooms = next;
-  if (changed) { state.days = {}; state.events = {}; state.week.days = []; refreshAll(true); }
-  renderCfg();
+  if (JSON.stringify(next) !== JSON.stringify(state.rooms)) {
+    state.rooms = next; state.days = {}; state.events = {}; state.wk = {}; state.week.days = []; refresh(true);
+  }
 }
-function normalizeCfg(data){
-  var byId = {}; if (data && Array.isArray(data.rooms)) data.rooms.forEach(function(r){ if (r && typeof r === 'object' && typeof r.id === 'string') byId[r.id] = r; });
-  return ROOMS_DEFAULT.map(function(d){ var r = byId[d.id] || {}; var cap = parseInt(r.capacity, 10); var mail = cleanEmail(r.email);
-    return {id: d.id, name: typeof r.name === 'string' && r.name.length && r.name.length < 60 ? r.name : d.name,
-      capacity: (cap >= 1 && cap <= CAP_MAX) ? cap : d.capacity, email: (mail.length <= 254 && EMAIL_RE.test(mail)) ? mail : ''}; });
+function normCfg(data){
+  var by = {}; if (data && Array.isArray(data.rooms)) data.rooms.forEach(function(r){ if (r && typeof r === 'object' && typeof r.id === 'string') by[r.id] = r; });
+  return ROOMS_DEFAULT.map(function(d){
+    var r = by[d.id] || {}, cap = parseInt(r.capacity,10), m = clean(r.email);
+    return {id:d.id, name: (typeof r.name === 'string' && r.name && r.name.length < 60) ? r.name : d.name,
+      capacity: (cap>=1&&cap<=CAP_MAX)?cap:d.capacity, email: (m.length<=254 && EMAIL_RE.test(m)) ? m : ''};
+  });
 }
-function normalizeDisc(data){
+function normDisc(data){
   var out = {}, src = data && data.rooms;
   if (src && typeof src === 'object' && !Array.isArray(src)) Object.keys(src).forEach(function(id){
-    var m = cleanEmail(src[id]);
+    var m = clean(src[id]);
     if (m.length <= 254 && EMAIL_RE.test(m) && ROOMS_DEFAULT.some(function(r){ return r.id === id; })) out[id] = m;
   });
   return out;
 }
-function shareDiscovered(found){
+function share(found){
   if (!state.db || !found) return;
   var novos = {};
   Object.keys(found).forEach(function(id){
-    var room = roomById(id);
-    if (room && room.email === found[id]) return;
-    if (state.disc[id] === found[id]) return;
+    var r = byId(id);
+    if ((r && r.email === found[id]) || state.disc[id] === found[id]) return;
     novos[id] = found[id];
   });
   if (!Object.keys(novos).length) return;
-  var merged = Object.assign({}, state.disc, novos);
-  state.disc = merged; applyRooms();
-  state.db.doc('discovered/rooms').set({rooms: merged, updatedAt: new Date().toISOString()}).catch(function(){});
+  state.disc = Object.assign({}, state.disc, novos); applyRooms();
+  state.db.doc('discovered/rooms').set({rooms: state.disc, updatedAt: new Date().toISOString()}).catch(function(){});
 }
 function autoDiscover(){
   if (state.discoverTried || !state.mcp || !state.db) return;
   if (!state.rooms.some(function(r){ return !r.email; })) return;
-  var lastRun = lsGet('salas-syos:scan-at', 0);
-  if (typeof lastRun === 'number' && Date.now() - lastRun < 6*3600000) return;
-  state.discoverTried = true; lsSet('salas-syos:scan-at', Date.now());
-  scanRooms(true);
-}
-function scanRooms(silent){
-  if (!state.mcp || state.scanning) return;
-  state.scanning = true; renderCfg();
-  var s = $('#cfg-status'); if (!silent) s.textContent = 'Procurando salas nas suas reuniões…';
-  var after = addDays(todayStr(), -150), before = addDays(todayStr(), 60);
-  enqueue(function(){ return callRead('outlook_calendar_search', {query:'*', afterDateTime: after, beforeDateTime: before, limit: 25, offset: 0}, true); })
+  var last = lsGet('salas:scan', 0);
+  if (typeof last === 'number' && Date.now() - last < 6*3600000) return;
+  state.discoverTried = true; lsSet('salas:scan', Date.now());
+  enq(function(){ return call('outlook_calendar_search', {query:'*', afterDateTime: addDays(todayStr(),-150), beforeDateTime: addDays(todayStr(),60), limit:25, offset:0}, true); })
   .then(function(res){
-    var p = payloadOf(res);
-    var raw = Array.isArray(p) ? p : listOf(p, ['events','items','results','value']);
-    var found = {};
-    raw.forEach(function(ev){
-      if (!ev || typeof ev !== 'object') return;
-      eventRooms(ev).forEach(function(x){ if (x.email && EMAIL_RE.test(x.email)) found[x.id] = x.email; });
-    });
-    var before2 = state.rooms.filter(function(r){ return !r.email; }).length;
-    state.scanning = false;
-    shareDiscovered(found);
-    var after2 = state.rooms.filter(function(r){ return !r.email; }).length;
-    renderCfg();
-    if (!silent) s.textContent = (before2 - after2) > 0
-      ? (before2 - after2) + ' sala' + ((before2-after2)>1?'s':'') + ' descoberta' + ((before2-after2)>1?'s':'') + ' e compartilhada com todos.'
-      : Object.keys(found).length ? 'As salas encontradas já estavam cadastradas.'
-      : 'Nenhuma sala nova nas suas reuniões. Convide a sala para uma reunião no Outlook e tente de novo.';
-  }, function(e){
-    state.scanning = false; renderCfg(); noteAuthError(e);
-    if (!silent) s.textContent = 'Não foi possível procurar: ' + errText(e);
-  });
+    var p = payload(res), raw = Array.isArray(p) ? p : arrOf(p, ['events','items','results','value']), found = {};
+    raw.forEach(function(ev){ if (ev && typeof ev === 'object') evRooms(ev).forEach(function(x){ if (x.email && EMAIL_RE.test(x.email)) found[x.id] = x.email; }); });
+    share(found);
+  }, function(){});
 }
 
-/* ---------- render: agora ---------- */
-function nowStatus(roomId){
-  var ds = todayStr(), a = roomDay(ds, roomId);
+/* estado agora */
+function nowOf(id){
+  var ds = todayStr(), a = rd(ds, id);
   if (a.status !== 'ok') return {kind: a.status};
-  var k = nowK(), base = baseK(ds), last = base + SLOTS*SLOT;
-  if (k < base) return {kind:'before'};
+  var k = nowK(), b = baseK(ds), last = lastK(ds);
+  if (k < b) return {kind:'before'};
   if (k >= last) return {kind:'after'};
-  var c = cellState(ds, roomId, k);
-  var u = k;
+  var c = cell(ds, id, k), u = k;
   if (c === 'free'){
-    while (u < last && cellState(ds, roomId, u) === 'free') u += SLOT;
-    return {kind:'free', untilK: u, openEnd: u >= last};
+    while (u < last && cell(ds, id, u) === 'free') u += SLOT;
+    var nx = null;
+    for (var j = u; j < last; j += SLOT) if (cell(ds, id, j) === 'free') { nx = j; break; }
+    return {kind:'free', until: u, openEnd: u >= last, ahead: u - k, after: nx};
   }
-  while (u < last && (cellState(ds, roomId, u) === 'busy' || cellState(ds, roomId, u) === 'tent')) u += SLOT;
-  return {kind: c === 'tent' ? 'tent' : 'busy', untilK: u, openEnd: u >= last, label: labelAt(ds, roomId, k, k + SLOT)};
+  while (u < last && (cell(ds, id, u) === 'busy' || cell(ds, id, u) === 'tent')) u += SLOT;
+  var free = null;
+  for (var i = u; i < last; i += SLOT) if (cell(ds, id, i) === 'free') { free = i; break; }
+  return {kind: c === 'tent' ? 'tent' : 'busy', until: u, openEnd: u >= last, wait: u - k, free: free, label: labelAt(ds, id, k, k+SLOT)};
 }
-function renderNow(){
-  $('#now-when').textContent = timeStr(new Date()) + ' · ' + fmtDate(new Date()) + ' · ' + tzLabel();
-  var host = $('#nowgrid'); host.innerHTML = '';
-  state.rooms.forEach(function(r){
-    var st = nowStatus(r.id), cls = 'na', word = '—', detail = '';
-    if (st.kind === 'free'){ cls = 'free'; word = 'Livre';
-      detail = st.openEnd ? 'pelo resto do dia' : 'até ' + slotLabel(st.untilK) + ' · ' + fmtHours(st.untilK - nowK()) + ' livres'; }
-    else if (st.kind === 'busy' || st.kind === 'tent'){ cls = st.kind === 'tent' ? 'tent' : 'busy'; word = st.kind === 'tent' ? 'Pendente' : 'Ocupada';
-      detail = (st.openEnd ? 'até o fim do dia' : 'até ' + slotLabel(st.untilK)) + (st.label ? ' · ' + st.label.subject + (st.label.who ? ' (' + st.label.who + ')' : '') : ''); }
-    else if (st.kind === 'before') detail = 'antes das 7h';
-    else if (st.kind === 'after') detail = 'depois das 19h30';
-    else if (st.kind === 'noemail') { word = 'Desconhecida'; detail = 'o Microsoft 365 não foi consultado: falta o endereço desta sala'; }
-    else if (st.kind === 'loading') { word = '…'; detail = 'consultando'; }
-    else if (st.kind === 'unknown') detail = 'agenda inacessível';
-    else if (st.kind === 'nomcp') detail = 'sem conector Microsoft 365';
-    else detail = 'sem dados';
-    var d = document.createElement('div'); d.className = 'nowcard ' + cls;
-    d.innerHTML = '<div class="r">' + esc(r.name) + '</div><div class="st">' + esc(word) + '</div>'
-      + '<div class="d">' + esc(detail) + '</div>'
-      + '<div class="d">' + (r.capacity ? esc(r.capacity + ' lugares') : '') + '</div>';
+function rank(st){
+  if (st.kind === 'free') return -100000 + -(st.ahead || 0);
+  if (st.kind === 'busy' || st.kind === 'tent') return (st.openEnd ? 100000 : (st.wait || 0));
+  return 500000;
+}
+
+/* render */
+function setStatus(){
+  var el = $('#status'), t = $('#status-text');
+  if (state.warn) { el.className = 'status warn'; t.textContent = state.warn; return; }
+  el.className = 'status';
+  var known = state.rooms.filter(function(r){ return rd(todayStr(), r.id).status === 'ok'; }).length;
+  t.textContent = state.lastAt ? known + ' de ' + state.rooms.length + ' salas · atualizado às ' + timeStr(new Date(state.lastAt))
+    : (state.mcp === null ? 'Sem conexão com o Microsoft 365 nesta visualização.' : 'Carregando agendas…');
+}
+function renderCards(){
+  $('#now-time').textContent = '· ' + timeStr(new Date());
+  var host = $('#cards'); host.innerHTML = '';
+  var items = state.rooms.map(function(r){ return {r: r, st: nowOf(r.id)}; });
+  items.sort(function(a,b){ return rank(a.st) - rank(b.st) || a.r.name.localeCompare(b.r.name); });
+  var shown = items.filter(function(x){
+    if (state.filter === 'free') return x.st.kind === 'free';
+    if (state.filter === 'busy') return x.st.kind === 'busy' || x.st.kind === 'tent';
+    return true;
+  });
+  if (!shown.length){
+    host.innerHTML = '<p class="empty">' + (state.filter === 'free' ? 'Nenhuma sala livre neste instante. Veja o próximo horário em Todas.' : 'Nenhuma sala ocupada neste instante.') + '</p>';
+    return;
+  }
+  shown.forEach(function(x){
+    var r = x.r, st = x.st, cls = '', badge = '', big = '', sub = '', next = '';
+    if (st.kind === 'free'){
+      cls = 'free'; badge = 'Livre';
+      big = st.openEnd ? 'até 20h30' : 'até ' + lbl(st.until);
+      sub = st.openEnd ? 'sem reserva pelo resto do dia' : fmtDur(st.ahead) + ' disponíveis';
+      if (!st.openEnd && st.after !== null) next = 'Livre de novo às ' + lbl(st.after);
+    } else if (st.kind === 'busy' || st.kind === 'tent'){
+      cls = st.kind === 'tent' ? 'tent' : 'busy'; badge = st.kind === 'tent' ? 'Pendente' : 'Ocupada';
+      big = st.openEnd ? 'até 20h30' : 'até ' + lbl(st.until);
+      sub = st.label ? st.label.subject + (st.label.who ? ' · ' + st.label.who : '') : 'reserva sem nome visível';
+      next = st.free !== null ? 'Livre às ' + lbl(st.free) : (st.openEnd ? '' : 'Sem janela livre hoje');
+    } else if (st.kind === 'before'){ badge = 'Fora do horário'; big = 'a partir das 7h'; }
+    else if (st.kind === 'after'){ badge = 'Fora do horário'; big = 'depois das 20h30'; }
+    else if (st.kind === 'noemail'){ badge = 'Desconhecida'; big = 'sem agenda'; sub = 'falta o endereço desta sala'; }
+    else if (st.kind === 'load'){ badge = 'Consultando'; big = '…'; }
+    else if (st.kind === 'unknown'){ badge = 'Sem acesso'; big = 'agenda inacessível'; }
+    else { badge = 'Sem dados'; big = '—'; }
+    var d = document.createElement('div'); d.className = 'rc ' + cls;
+    d.innerHTML = '<div class="top"><span class="nm">' + esc(r.name) + '</span><span class="cap">' + (r.capacity ? esc(r.capacity + ' lug.') : '') + '</span></div>'
+      + '<span class="badge">' + esc(badge) + '</span>'
+      + '<div class="big">' + esc(big) + '</div>'
+      + (sub ? '<div class="sub">' + esc(sub) + '</div>' : '')
+      + (next ? '<div class="next">' + esc(next) + '</div>' : '');
     host.appendChild(d);
   });
 }
-
-/* ---------- render: dia ---------- */
-function esc(s){ return String(s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
-function outlookUrl(roomEmail, roomName, k){
-  var start = new Date(k*60000), end = new Date((k+30)*60000);
-  return 'https://outlook.office.com/calendar/deeplink/compose?path=%2Fcalendar%2Faction%2Fcompose&rru=addevent'
-    + '&startdt=' + encodeURIComponent(utcIso(start)) + '&enddt=' + encodeURIComponent(utcIso(end))
-    + '&location=' + encodeURIComponent('Sala ' + roomName)
-    + (roomEmail ? '&to=' + encodeURIComponent(roomEmail) : '');
+function stats(ds){
+  var per = [], busy = 0, known = 0, byK = {};
+  state.rooms.forEach(function(r){
+    var a = rd(ds, r.id), b = 0, kn = 0;
+    if (a.status === 'ok') for (var i=0;i<SLOTS;i++){
+      var k = baseK(ds)+i*SLOT, c = cell(ds, r.id, k);
+      if (c === 'busy' || c === 'tent') { b++; byK[k] = (byK[k]||0)+1; }
+      if (c !== 'none' && c !== 'load') kn++;
+    }
+    busy += b; known += kn;
+    per.push({room:r, busy:b, known:kn, pct: kn ? Math.round(b/kn*100) : null, status:a.status});
+  });
+  var pk = null, pn = 0;
+  Object.keys(byK).forEach(function(k){ if (byK[k] > pn) { pn = byK[k]; pk = +k; } });
+  return {per:per, busy:busy, known:known, pct: known ? Math.round(busy/known*100) : null, peak:pk, peakN:pn};
 }
-function renderPanel(){
-  var ds = state.panelDay || todayStr(), today = todayStr();
-  $('#panel-when').textContent = fmtDate(fromDateStr(ds)) + (ds === today ? ' · hoje' : '');
-  var st = dayStats(ds), base = baseK(ds), nk = nowK(), isToday = ds === today;
-  var nowKinds = isToday ? state.rooms.map(function(r){ return nowStatus(r.id).kind; }) : [];
-  var nowKnown = nowKinds.filter(function(k){ return k === 'free' || k === 'busy' || k === 'tent'; }).length;
-  var freeNow = isToday ? nowKinds.filter(function(k){ return k === 'free'; }).length : null;
-  var withData = st.perRoom.filter(function(p){ return p.status === 'ok'; }).length;
-  var kp = [
-    {v: st.pct === null ? '—' : st.pct + '%', l: 'Ocupação do dia', s: withData + ' de ' + state.rooms.length + ' salas com agenda lida'},
-    {v: fmtHours(st.busy * SLOT), l: 'Horas reservadas', s: 'na janela 7h–19h30'},
-    {v: isToday ? (nowKnown ? freeNow + '/' + nowKnown : '—') : '—', l: 'Livres agora',
-     s: !isToday ? 'só para hoje' : !nowKnown ? 'nenhuma sala com agenda' : nowKnown < state.rooms.length ? 'das ' + nowKnown + ' salas com agenda' : 'neste instante'},
-    {v: st.peakK === null ? '—' : slotLabel(st.peakK), l: 'Horário de pico', s: st.peakK === null ? 'sem reservas' : st.peakN + ' sala' + (st.peakN>1?'s':'') + ' ocupada' + (st.peakN>1?'s':'')}
-  ];
-  $('#kpis').innerHTML = kp.map(function(x){ return '<div class="kpi"><div class="v">'+esc(x.v)+'</div><div class="l">'+esc(x.l)+'</div><div class="s">'+esc(x.s)+'</div></div>'; }).join('');
-  var semend = state.rooms.filter(function(r){ return !r.email; });
-  var av = $('#missing-note');
-  if (semend.length && state.mcp) {
-    av.hidden = false;
-    av.innerHTML = '<b style="font-weight:600">' + esc(semend.map(function(r){ return r.name; }).join(', ')) + '</b>: nada é consultado porque o Microsoft 365 exige o endereço da caixa de recurso da sala, e ele ainda não é conhecido. Não é livre nem ocupada: é desconhecido, e a página prefere dizer isso a chutar. Convide a sala para qualquer reunião no Outlook e clique em “Descobrir agora”, no rodapé — o endereço passa a valer para todo mundo.';
-  } else av.hidden = true;
+function renderDay(){
+  var ds = state.day || todayStr(), today = ds === todayStr();
+  $('#day-when').textContent = fmtDate(fromDateStr(ds)) + (today ? ' · hoje' : '');
+  var s = stats(ds), b = baseK(ds), nk = nowK();
+  var kinds = today ? state.rooms.map(function(r){ return nowOf(r.id).kind; }) : [];
+  var kn = kinds.filter(function(k){ return k === 'free' || k === 'busy' || k === 'tent'; }).length;
+  var fr = kinds.filter(function(k){ return k === 'free'; }).length;
+  var withData = s.per.filter(function(p){ return p.status === 'ok'; }).length;
+  [[today ? (kn ? fr + '/' + kn : '—') : '—', 'Livres agora', today ? (kn ? 'de ' + kn + ' com agenda' : 'sem agenda lida') : 'só hoje'],
+   [s.pct === null ? '—' : s.pct + '%', 'Ocupação do dia', s.known ? fmtDur(s.busy*SLOT) + ' de ' + fmtDur(s.known*SLOT) : withData + ' de ' + state.rooms.length + ' salas'],
+   [fmtDur(s.busy*SLOT), 'Horas reservadas', withData + ' de ' + state.rooms.length + ' salas · 7h–20h30'],
+   [s.peak === null ? '—' : lbl(s.peak), 'Pico', s.peak === null ? 'sem reservas' : s.peakN + ' salas ocupadas']]
+  .forEach(function(x, i){
+    var el = $('#kpis').children[i];
+    el.innerHTML = '<div class="v">'+esc(x[0])+'</div><div class="l">'+esc(x[1])+'</div><div class="s">'+esc(x[2])+'</div>';
+  });
+  var miss = state.rooms.filter(function(r){ return !r.email; }), note = $('#missing');
+  if (miss.length && state.mcp) { note.hidden = false; note.textContent = miss.map(function(r){ return r.name; }).join(', ') + ': sem agenda porque o endereço da sala no Microsoft 365 ainda não é conhecido. Não é livre nem ocupada.'; }
+  else note.hidden = true;
 
   var host = $('#daygrid'); host.innerHTML = '';
   state.rooms.forEach(function(r){
-    var a = roomDay(ds, r.id);
-    var sub = a.status === 'ok' ? (r.capacity ? r.capacity + ' lugares' : 'capacidade na porta')
-      : a.status === 'noemail' ? 'falta o endereço' : a.status === 'loading' ? 'consultando…' : a.status === 'unknown' ? 'sem acesso' : a.status === 'error' ? 'erro' : a.status === 'nomcp' ? 'sem conector' : '—';
-
+    var a = rd(ds, r.id);
+    var sub = a.status === 'ok' ? (r.capacity ? r.capacity + ' lugares' : '') : a.status === 'noemail' ? 'sem agenda'
+      : a.status === 'loading' ? 'consultando' : a.status === 'unknown' ? 'sem acesso' : a.status === 'error' ? 'erro' : '';
     var row = document.createElement('div'); row.className = 'grow';
-    var cells = document.createElement('div'); cells.className = 'gcells';
+    var cells = document.createElement('div'); cells.className = 'cells';
     for (var i=0;i<SLOTS;i++){
-      var k = base + i*SLOT, cs = cellState(ds, r.id, k);
-      var b = document.createElement('b');
-      var cls = cs === 'free' ? 'f' : cs === 'busy' ? 'b' : cs === 'tent' ? 't' : '';
-      var past = isToday && k < nk;
-      if (past) cls += (cls ? ' ' : '') + 'p';
-      if (isToday && k === nk) cls += ' now';
-      var lb = (cs === 'busy' || cs === 'tent') ? labelAt(ds, r.id, k, k + SLOT) : null;
-      b.title = r.name + ' · ' + slotLabel(k) + ' · ' + (cs === 'free' ? 'livre' : cs === 'busy' ? 'ocupada' : cs === 'tent' ? 'pendente' : 'sem dados')
+      var k = b + i*SLOT, c = cell(ds, r.id, k), el = document.createElement('b');
+      var cl = c === 'free' ? 'f' : c === 'busy' ? 'b' : c === 'tent' ? 't' : '';
+      if (today && k < nk) cl += (cl ? ' ' : '') + 'p';
+      if (today && k === nk) cl += ' now';
+      el.className = cl.trim();
+      var lb = (c === 'busy' || c === 'tent') ? labelAt(ds, r.id, k, k+SLOT) : null;
+      el.title = r.name + ' · ' + lbl(k) + ' · ' + (c === 'free' ? 'livre' : c === 'busy' ? 'ocupada' : c === 'tent' ? 'pendente' : 'sem dados')
         + (lb ? ' · ' + lb.subject + (lb.who ? ' (' + lb.who + ')' : '') : '');
-      if (cs === 'free' && !past && r.email) {
-        cls += ' clickable'; b.title += ' · clique para abrir no Outlook';
-        (function(kk, room){ b.addEventListener('click', function(){ window.open(outlookUrl(room.email, room.name, kk), '_blank', 'noopener'); }); })(k, r);
-      }
-      b.className = cls.trim();
-      cells.appendChild(b);
+      cells.appendChild(el);
     }
-    row.innerHTML = '<div class="gname">'+esc(r.name)+'<s>'+esc(sub)+'</s></div>';
+    row.innerHTML = '<div class="gname">'+esc(r.name)+(sub ? '<s>'+esc(sub)+'</s>' : '')+'</div>';
     row.appendChild(cells); host.appendChild(row);
   });
 
   var bars = $('#bars'); bars.innerHTML = '';
-  st.perRoom.slice().sort(function(a,b){ return (b.pct||0) - (a.pct||0); }).forEach(function(p){
-    var nf = nextFree(ds, p.room.id);
-    var sub = p.status !== 'ok' ? (p.status === 'noemail' ? 'sem agenda conectada' : p.status === 'unknown' ? 'agenda inacessível' : p.status === 'loading' ? 'consultando…' : 'sem dados')
-      : (p.busy ? fmtHours(p.busy*SLOT) + ' reservadas' : 'nenhuma reserva') + (nf !== null && isToday ? ' · livre ' + slotLabel(nf) : '');
-    var div = document.createElement('div'); div.className = 'bar';
-    div.innerHTML = '<div class="gname">'+esc(p.room.name)+'<s>'+esc(sub)+'</s></div>'
-      + '<div class="t"><i style="width:'+(p.pct||0)+'%"></i></div><div class="n">'+esc(p.pct === null ? '—' : p.pct + '%')+'</div>';
-    bars.appendChild(div);
+  s.per.slice().sort(function(a,b2){ return (b2.pct||0)-(a.pct||0); }).forEach(function(p){
+    var sub = p.status !== 'ok' ? (p.status === 'noemail' ? 'sem agenda' : p.status === 'unknown' ? 'sem acesso' : p.status === 'loading' ? 'consultando' : 'sem dados')
+      : p.busy ? fmtDur(p.busy*SLOT) + ' reservadas' : 'sem reservas';
+    var d = document.createElement('div'); d.className = 'bar';
+    d.innerHTML = '<div class="gname">'+esc(p.room.name)+'<s>'+esc(sub)+'</s></div>'
+      + '<div class="t"><i style="width:'+(p.pct||0)+'%"></i></div>'
+      + '<div class="n">'+esc(p.pct === null ? '—' : p.pct + '%')+(p.status === 'ok' ? '<s>'+esc(fmtShortDur(p.busy*SLOT))+'</s>' : '')+'</div>';
+    bars.appendChild(d);
   });
-  renderBookings(ds);
+  renderHours(ds);
   renderWeek();
 }
-function renderBookings(ds){
-  var host = $('#bklist'); host.innerHTML = '';
+function renderHours(ds){
+  var host = $('#hours'); host.innerHTML = '';
+  var today = ds === todayStr(), nk = nowK(), any = false;
   var rows = [];
-  state.rooms.forEach(function(r){
-    intervals(ds, r.id).forEach(function(iv){ rows.push({room: r, iv: iv, lb: labelAt(ds, r.id, iv.startK, iv.endK)}); });
-  });
-  rows.sort(function(a,b){ return a.iv.startK - b.iv.startK || a.room.name.localeCompare(b.room.name); });
-  var named = rows.filter(function(x){ return x.lb; }).length;
-  $('#bk-hint').textContent = rows.length ? named + ' de ' + rows.length + ' com nome' : '';
-  if (!rows.length){
-    var withData = state.rooms.filter(function(r){ return roomDay(ds, r.id).status === 'ok'; }).length;
-    host.innerHTML = '<div class="bkempty">' + (withData ? 'Nenhuma sala reservada neste dia entre 7h e 19h30.' : 'Sem dados de agenda ainda.') + '</div>';
-    return;
+  for (var h = Math.floor(DAY_START/60); h*60 < DAY_END; h++){
+    var a = Math.max(h*60, DAY_START), bEnd = Math.min((h+1)*60, DAY_END);
+    var aK = baseK(ds) + (a - DAY_START), bK = baseK(ds) + (bEnd - DAY_START);
+    var full = [], part = [], none = 0;
+    state.rooms.forEach(function(r){
+      if (rd(ds, r.id).status !== 'ok') { none++; return; }
+      var free = 0, tot = 0, firstBusy = null;
+      for (var k = aK; k < bK; k += SLOT){ tot++; if (cell(ds, r.id, k) === 'free') free++; else if (firstBusy === null) firstBusy = k; }
+      if (free === tot) full.push(r.name);
+      else if (free > 0) part.push(r.name + (firstBusy !== null && firstBusy > aK ? ' até ' + lbl(firstBusy) : ''));
+    });
+    if (full.length || part.length) any = true;
+    rows.push({a:aK, b:bK, label: pad(h)+':00', end: bEnd === DAY_END ? '20:30' : pad(h+1)+':00', full: full, part: part, none: none});
   }
-  rows.forEach(function(x){
-    var d = document.createElement('div'); d.className = 'bk' + (x.iv.kind === 'tent' ? ' t' : '');
-    var who = x.lb ? esc(x.lb.subject || 'Reunião') + (x.lb.who ? ' <s>· ' + esc(x.lb.who) + '</s>' : '')
-      : '<s>Reservada · nome não visível para você</s>';
-    d.innerHTML = '<span class="bk-time">' + esc(slotLabel(x.iv.startK) + '–' + slotLabel(x.iv.endK)) + '</span>'
-      + '<span class="bk-room">' + esc(x.room.name) + '</span>'
-      + '<span class="bk-who">' + who + (x.iv.kind === 'tent' ? ' <s>(pendente)</s>' : '') + '</span>';
+  var withData = state.rooms.filter(function(r){ return rd(ds, r.id).status === 'ok'; }).length;
+  $('#hours-sub').textContent = withData ? 'salas livres em cada faixa' : '';
+  if (!withData) { host.innerHTML = '<div class="hr"><span class="h">—</span><span class="c">sem dados</span><span class="chips"></span></div>'; return; }
+  rows.forEach(function(r){
+    var isNow = today && nk >= r.a && nk < r.b;
+    var past = today && nk >= r.b;
+    var cls = 'hr' + (isNow ? ' now' : '') + (r.full.length === withData ? ' full' : '') + (!r.full.length && !r.part.length ? ' none' : '');
+    var d = document.createElement('div'); d.className = cls;
+    if (past) d.style.opacity = '.5';
+    var chips = r.full.map(function(n){ return '<span class="chip">'+esc(n)+'</span>'; })
+      .concat(r.part.map(function(n){ return '<span class="chip part">'+esc(n)+'</span>'; })).join('');
+    d.innerHTML = '<span class="h">'+esc(r.label)+'–'+esc(r.end)+'</span>'
+      + '<span class="c">'+ r.full.length + ' de ' + withData + ' livres</span>'
+      + '<span class="chips">' + (chips || '<span class="chip none">todas ocupadas</span>') + '</span>';
     host.appendChild(d);
   });
 }
 function weekDays(ds){
   var d = fromDateStr(ds), dow = d.getDay(), off = dow === 0 ? -6 : 1 - dow, out = [];
-  for (var i=0;i<5;i++) out.push(addDays(dateStr(d), off + i));
+  for (var i=0;i<5;i++) out.push(addDays(dateStr(d), off+i));
   return out;
 }
 function renderWeek(){
-  var days = weekDays(state.panelDay || todayStr());
+  var days = weekDays(state.day || todayStr());
   $('#week-range').textContent = fmtShort(fromDateStr(days[0])) + ' – ' + fmtShort(fromDateStr(days[4]));
-  var host = $('#weekgrid'); host.innerHTML = '';
+  var host = $('#week'); host.innerHTML = '';
   var head = document.createElement('div'); head.className = 'wrow';
-  head.innerHTML = '<div class="wcell head"></div>' + days.map(function(d){ return '<div class="wcell head">'+esc(fmtShort(fromDateStr(d)).replace(/\.$/,''))+'</div>'; }).join('');
+  head.innerHTML = '<div class="wc head"></div>' + days.map(function(d){ return '<div class="wc head">'+esc(fmtShort(fromDateStr(d)))+'</div>'; }).join('');
   host.appendChild(head);
   state.rooms.forEach(function(r){
     var row = document.createElement('div'); row.className = 'wrow';
     row.innerHTML = '<div class="gname">'+esc(r.name)+'</div>' + days.map(function(d){
-      var a = (state.days[d] || {})[r.id];
-      if (!a || a.status !== 'ok') return '<div class="wcell na">—</div>';
-      var busy = 0, known = 0;
-      for (var i=0;i<SLOTS;i++){ var c = cellState(d, r.id, baseK(d) + i*SLOT); if (c === 'busy' || c === 'tent') busy++; if (c !== 'nodata' && c !== 'loading') known++; }
-      var pct = known ? Math.round(busy/known*100) : 0;
-      return '<div class="wcell" style="background:rgba(var(--heat),'+((pct/100)*0.45).toFixed(3)+')" title="'+esc(r.name+' · '+fmtShort(fromDateStr(d))+' · '+fmtHours(busy*SLOT))+'">'+pct+'%</div>';
+      var w = (state.wk[d]||{})[r.id];
+      if (!w || w.status !== 'ok') return '<div class="wc na">—</div>';
+      var pct = w.pct;
+      return '<div class="wc" style="background:rgba(var(--heat),'+((pct/100)*0.42).toFixed(3)+')" title="'+esc(r.name+' · '+fmtDur(w.busy*WSLOT))+'">'+pct+'%<s>'+esc(fmtShortDur(w.busy*WSLOT))+'</s></div>';
     }).join('');
     host.appendChild(row);
   });
-  var loaded = days.every(function(d){ return state.week.days.indexOf(d) >= 0; });
-  if (!loaded && !state.week.loading) host.appendChild(Object.assign(document.createElement('p'), {className:'small', textContent:'Clique em “Carregar semana” para preencher a grade.'}));
 }
 function loadWeek(){
   if (state.week.loading || !state.mcp) return;
-  var days = weekDays(state.panelDay || todayStr());
-  var withEmail = state.rooms.filter(function(r){ return !!r.email; });
-  state.week.loading = true; state.week.done = 0; state.week.total = days.length * withEmail.length; state.week.days = [];
+  var days = weekDays(state.day || todayStr());
+  var rooms = state.rooms.filter(function(r){ return !!r.email; });
+  state.week.loading = true; state.week.done = 0; state.week.total = days.length * rooms.length;
   $('#week-load').disabled = true;
   var prog = $('#week-prog');
-  function tick(){ prog.textContent = 'Carregando ' + state.week.done + '/' + state.week.total + '…'; }
+  function tick(){ prog.textContent = state.week.done + '/' + state.week.total; }
   tick();
   var chain = Promise.resolve();
   days.forEach(function(d){
-    chain = chain.then(function(){
-      return ensureDay(d, false, false, function(){ state.week.done++; tick(); renderWeek(); }).then(function(){
-        if (state.week.days.indexOf(d) < 0) state.week.days.push(d);
-        renderWeek();
+    if (!state.wk[d]) state.wk[d] = {};
+    rooms.forEach(function(room){
+      chain = chain.then(function(){
+        return enq(function(){ return fetchChunk(room, baseK(d), WSLOTS, WSLOT, false); }).then(function(p){
+          var busy = 0, known = 0;
+          for (var i=0;i<WSLOTS;i++){
+            var k = baseK(d)+i*WSLOT, v = p.slots[k];
+            if (!p.count) { busy++; known++; continue; }
+            if (v === 'unknown' || (v === undefined && p.unknown === p.count)) continue;
+            known++; if (!v || v === 'busy' || v === 'oof' || v === 'tentative') busy++;
+          }
+          state.wk[d][room.id] = {status: 'ok', busy: busy, pct: known ? Math.round(busy/known*100) : 0};
+          state.week.done++; tick(); renderWeek();
+        }, function(){ state.wk[d][room.id] = {status:'error'}; state.week.done++; tick(); });
       });
     });
   });
-  chain.then(function(){
-    state.week.loading = false; $('#week-load').disabled = false;
-    prog.textContent = 'Semana atualizada às ' + timeStr(new Date()) + '.'; renderWeek();
-  }, function(){
-    state.week.loading = false; $('#week-load').disabled = false;
-    prog.textContent = 'Não foi possível carregar a semana inteira.'; renderWeek();
-  });
+  chain.then(function(){ state.week.loading = false; $('#week-load').disabled = false; prog.textContent = 'atualizado às ' + timeStr(new Date()); renderWeek(); },
+    function(){ state.week.loading = false; $('#week-load').disabled = false; prog.textContent = 'falha ao carregar'; });
 }
-
-/* ---------- configuração ---------- */
-function cfgStatusText(){
-  if (state.db === null) return 'Configuração compartilhada indisponível nesta visualização.';
-  if (state.dbError) return 'Configuração compartilhada indisponível no momento; recarregue a página.';
-  if (!state.db) return 'Conectando ao armazenamento…';
-  if (state.cfgSaving) return 'Salvando…';
-  if (state.scanning) return 'Procurando salas nas suas reuniões…';
-  var missing = state.rooms.filter(function(r){ return !r.email; }).length;
-  var disc = state.rooms.filter(function(r){ return r.source === 'disc'; }).length;
-  return (missing ? missing + ' sala' + (missing>1?'s':'') + ' ainda sem agenda. ' : 'Todas as salas com agenda. ')
-    + (disc ? disc + ' descoberta' + (disc>1?'s':'') + ' automaticamente.' : '');
-}
-function buildCfg(){
-  var host = $('#cfg'); host.innerHTML = '';
-  var head = document.createElement('div'); head.className = 'cfg-row small'; head.innerHTML = '<span class="rn">Sala</span><span>Lugares</span><span>Caixa de recurso</span>'; host.appendChild(head);
-  state.rooms.forEach(function(r){
-    var row = document.createElement('div'); row.className = 'cfg-row';
-    row.innerHTML = '<span class="rn">' + esc(r.name) + '</span>' +
-      '<input type="number" min="1" max="' + CAP_MAX + '" id="cap-' + r.id + '" aria-label="Lugares em ' + esc(r.name) + '" placeholder="—">' +
-      '<input type="email" id="mail-' + r.id + '" aria-label="Endereço da sala ' + esc(r.name) + '" placeholder="descoberto automaticamente" spellcheck="false" maxlength="254">';
-    host.appendChild(row);
-    $$('input', row).forEach(function(inp){ inp.addEventListener('input', function(){ inp.dataset.dirty = '1'; }); });
-  });
-  state.cfgBuilt = true;
-}
-function renderCfg(){
-  if (!state.cfgBuilt) buildCfg();
-  state.rooms.forEach(function(r){
-    var cap = $('#cap-'+r.id), mail = $('#mail-'+r.id); if (!cap || !mail) return;
-    if (!cap.dataset.dirty && document.activeElement !== cap) cap.value = r.capacity || '';
-    if (!mail.dataset.dirty && document.activeElement !== mail) mail.value = r.email || '';
-    var ro = !!state.dbError || state.db === null;
-    cap.readOnly = ro; mail.readOnly = ro;
-  });
-  var s = $('#cfg-status'); if (!state.cfgSaving) s.textContent = cfgStatusText();
-  $('#cfg-save').disabled = !state.db || state.cfgSaving || !!state.dbError;
-  $('#cfg-scan').disabled = !state.mcp || state.scanning;
-}
-function saveCfg(){
-  if (!state.db || state.cfgSaving) return;
-  var s = $('#cfg-status'), badMail = [], badCap = [];
-  var rooms = state.rooms.map(function(r){
-    var capRaw = String(($('#cap-'+r.id) || {}).value || '').trim(), cap = parseInt(capRaw, 10), mail = cleanEmail(($('#mail-'+r.id) || {}).value || '');
-    if (capRaw && !(cap >= 1 && cap <= CAP_MAX)) badCap.push(r.name);
-    if (mail && !(mail.length <= 254 && EMAIL_RE.test(mail))) badMail.push(r.name);
-    return {id: r.id, name: r.name, capacity: (cap >= 1 && cap <= CAP_MAX) ? cap : null,
-      email: (mail.length <= 254 && EMAIL_RE.test(mail)) ? mail : ''};
-  });
-  if (badMail.length) { s.textContent = 'Endereço inválido em: ' + badMail.join(', ') + '.'; return; }
-  if (badCap.length) { s.textContent = 'Lugares inválidos (1 a ' + CAP_MAX + ') em: ' + badCap.join(', ') + '.'; return; }
-  state.cfgSaving = true; renderCfg(); s.textContent = 'Salvando…';
-  state.db.doc('config/rooms').set({rooms: rooms, updatedAt: new Date().toISOString(), tz: TZ}).then(function(){
-    state.cfgSaving = false; $$('#cfg input').forEach(function(i){ delete i.dataset.dirty; }); renderCfg();
-    s.textContent = 'Salvo. Todos os usuários já veem esta configuração.';
-  }, function(e){
-    state.cfgSaving = false; renderCfg();
-    var code = e && e.code || '';
-    s.textContent = code === 'invalid_argument' ? 'Não foi possível salvar: só quem pode editar esta página altera a configuração.' : code === 'quota_exceeded' ? 'Limite de armazenamento atingido.' : 'Não foi possível salvar' + (e && e.message ? ': ' + String(e.message).slice(0, 120) : '.');
-  });
-}
-
-/* ---------- capacidades ---------- */
-function setConn(kind, text){ $('#conn-dot').className = 'dot ' + kind; $('#conn-text').textContent = text; }
-function renderAll(){ renderNow(); renderPanel(); }
-function refreshAll(force, fresh){
-  var days = [todayStr()];
-  var pd = state.panelDay || todayStr();
+function renderAll(){ setStatus(); renderCards(); renderDay(); }
+function refresh(force, fresh){
+  var days = [todayStr()], pd = state.day || todayStr();
   if (days.indexOf(pd) < 0) days.push(pd);
   days.forEach(function(d){ ensureDay(d, force, fresh, renderAll).then(renderAll); });
 }
-function initCapabilities(){
-  if (!window.claude || typeof window.claude.use !== 'function') {
-    state.mcp = null; state.db = null; state.connector = 'nomcp';
-    setConn('off', 'Fora do claude.ai não dá para ler as agendas.'); renderCfg(); refreshAll(true); return;
-  }
-  window.claude.use('mcp').then(function(mcp){
-    state.mcp = mcp || null;
-    if (!mcp) { state.connector = 'nomcp'; setConn('off', 'Conector indisponível nesta visualização.'); refreshAll(true); return; }
-    return mcp.listTools(SERVER).then(function(lt){
-      var srv = (lt && lt.servers || []).filter(function(s){ return s.server === SERVER; })[0];
-      if (!srv) { state.connector = 'not_connected'; setConn('warn', 'Microsoft 365 não está conectado na sua conta do claude.ai.'); }
-      else if (srv.authStatus === 'needs_reauth') { state.connector = 'needs_reauth'; setConn('warn', 'O Microsoft 365 precisa ser reconectado.'); }
-      else if (!srv.tools || !srv.tools.length) { state.connector = 'not_connected'; setConn('warn', 'Microsoft 365: escolha o conector quando for solicitado.'); }
-      else { state.connector = 'connected'; setConn('on', 'Microsoft 365 conectado como você. A primeira consulta pede sua permissão.'); }
-    }, function(){ state.connector = 'unknown'; setConn('', 'Status do Microsoft 365 não verificado; a primeira consulta vai informar.'); })
-    .then(function(){ renderCfg(); refreshAll(true); autoDiscover(); });
-  }).catch(function(){ state.mcp = null; state.connector = 'nomcp'; setConn('off', 'Conector indisponível.'); refreshAll(true); });
-  window.claude.use('db').then(function(db){
-    state.db = db || null; renderCfg();
-    if (!db) return;
-    var lastCfg = null, lastDisc = null;
-    db.doc('config/rooms').onSnapshot(function(snap){
-      if (snap === lastCfg) return; lastCfg = snap;
-      state.cfg = snap.exists ? normalizeCfg(snap.data()) : ROOMS_DEFAULT.map(function(r){ return Object.assign({}, r); });
-      state.cfgSource = snap.exists ? 'db' : 'default';
-      applyRooms(); renderAll(); autoDiscover();
-    }, function(e){ state.dbError = e || {code:'unavailable'}; renderCfg(); });
-    db.doc('discovered/rooms').onSnapshot(function(snap){
-      if (snap === lastDisc) return; lastDisc = snap;
-      state.disc = snap.exists ? normalizeDisc(snap.data()) : {};
-      applyRooms(); renderAll(); autoDiscover();
-    }, function(){});
-  }).catch(function(){ state.db = null; renderCfg(); });
+function setDay(ds){ state.day = ds; renderAll(); ensureDay(ds, false, false, renderAll).then(renderAll); }
+function setFilter(f){
+  state.filter = f; lsSet('salas:filter', f);
+  ['all','free','busy'].forEach(function(x){ $('#f-'+x).setAttribute('aria-pressed', x === f ? 'true' : 'false'); });
+  renderCards();
 }
-function setPanelDay(ds){ state.panelDay = ds; state.week.days = []; renderAll(); ensureDay(ds, false, false, renderAll).then(renderAll); }
-
-/* ---------- boot ---------- */
+function init(){
+  if (!window.claude || typeof window.claude.use !== 'function') { state.mcp = null; state.db = null; renderAll(); return; }
+  window.claude.use('mcp').then(function(m){
+    state.mcp = m || null;
+    if (!m) { renderAll(); return; }
+    return m.listTools(SERVER).then(function(lt){
+      var srv = (lt && lt.servers || []).filter(function(s){ return s.server === SERVER; })[0];
+      if (!srv) state.warn = 'Conecte o Microsoft 365 em claude.ai → Configurações → Conectores para ver as agendas.';
+      else if (srv.authStatus === 'needs_reauth') state.warn = 'O Microsoft 365 precisa ser reconectado.';
+    }, function(){}).then(function(){ refresh(true); autoDiscover(); });
+  }).catch(function(){ state.mcp = null; renderAll(); });
+  window.claude.use('db').then(function(db){
+    state.db = db || null; if (!db) return;
+    var lc = null, ld = null;
+    db.doc('config/rooms').onSnapshot(function(s){ if (s === lc) return; lc = s;
+      state.cfg = s.exists ? normCfg(s.data()) : ROOMS_DEFAULT.map(function(r){ return Object.assign({}, r); });
+      applyRooms(); renderAll(); autoDiscover(); }, function(){});
+    db.doc('discovered/rooms').onSnapshot(function(s){ if (s === ld) return; ld = s;
+      state.disc = s.exists ? normDisc(s.data()) : {}; applyRooms(); renderAll(); autoDiscover(); }, function(){});
+  }).catch(function(){ state.db = null; });
+}
 function start(){
-  state.panelDay = todayStr();
-  renderCfg(); renderAll();
-  $('#day-prev').addEventListener('click', function(){ setPanelDay(addDays(state.panelDay, -1)); });
-  $('#day-next').addEventListener('click', function(){ setPanelDay(addDays(state.panelDay, 1)); });
-  $('#day-today').addEventListener('click', function(){ setPanelDay(todayStr()); });
-  $('#day-reload').addEventListener('click', function(){ refreshAll(true, true); });
+  state.day = todayStr();
+  for (var i=0;i<4;i++) $('#kpis').appendChild(Object.assign(document.createElement('div'), {className:'kpi'}));
+  var f = lsGet('salas:filter', 'all'); state.filter = (f === 'free' || f === 'busy') ? f : 'all';
+  setFilter(state.filter);
+  renderAll();
+  $('#prev').addEventListener('click', function(){ setDay(addDays(state.day, -1)); });
+  $('#next').addEventListener('click', function(){ setDay(addDays(state.day, 1)); });
+  $('#today').addEventListener('click', function(){ setDay(todayStr()); });
+  $('#reload').addEventListener('click', function(){ state.warn = ''; refresh(true, true); });
   $('#week-load').addEventListener('click', loadWeek);
-  $('#cfg-save').addEventListener('click', saveCfg);
-  $('#cfg-scan').addEventListener('click', function(){ scanRooms(false); });
-  setInterval(function(){ renderAll(); refreshAll(false); }, 60000);
-  initCapabilities();
+  $('#f-all').addEventListener('click', function(){ setFilter('all'); });
+  $('#f-free').addEventListener('click', function(){ setFilter('free'); });
+  $('#f-busy').addEventListener('click', function(){ setFilter('busy'); });
+  setInterval(function(){ renderAll(); refresh(false); }, 60000);
+  init();
 }
 start();
 })();
